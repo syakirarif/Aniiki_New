@@ -1,0 +1,8 @@
+
+dependencies {
+    implementation project(":common:core")
+    implementation 'com.google.dagger:hilt-android:2.48'
+    ksp 'com.google.dagger:hilt-compiler:2.48'
+//  kapt 'com.google.dagger:dagger-compiler:2.42'
+//  annotationProcessor 'androidx.room:room-compiler:2.4.2'
+}
