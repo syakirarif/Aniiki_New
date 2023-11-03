@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -60,15 +59,24 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.glide.GlideImage
 import com.syakirarif.aniiki.apiservice.response.anime.AnimeResponse
+import com.syakirarif.aniiki.compose.spacer
 import retrofit2.HttpException
+import timber.log.Timber
 import java.io.IOException
 
 @Composable
 fun HomeScreenApp(homeViewModel: HomeViewModel) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
+    homeViewModel.fetchAnimePaging()
+
     val pagingItems = homeViewModel.animePaging.value.collectAsLazyPagingItems()
     val pagingItemsTopAiring = homeViewModel.animeTopAiringPaging.value.collectAsLazyPagingItems()
+    val pagingItemsTopUpcoming =
+        homeViewModel.animeTopUpcomingPaging.value.collectAsLazyPagingItems()
+    val pagingItemsTopMostPopular =
+        homeViewModel.animeTopMostPopularPaging.value.collectAsLazyPagingItems()
+    val errorMessage by homeViewModel.errorMessage
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -86,13 +94,25 @@ fun HomeScreenApp(homeViewModel: HomeViewModel) {
                     HomeAnimeHeading(title = "Summer 2023 Anime")
                     HomeAnimeList(
                         pagingItems = pagingItems,
-                        onErrorClick = { homeViewModel.fetchAnimePaging() })
-                    Spacer(modifier = Modifier.height(8.dp))
+                        onErrorClick = { homeViewModel.fetchAnimePaging() },
+                        errorMessageMain = errorMessage
+                    )
+                    8.spacer()
                     HomeAnimeHeading(title = "Top Airing Anime")
                     HomeAnimeList(
                         pagingItems = pagingItemsTopAiring,
                         onErrorClick = { homeViewModel.fetchAnimeTopAiringPaging() })
-                    Spacer(modifier = Modifier.height(8.dp))
+                    8.spacer()
+                    HomeAnimeHeading(title = "Top Upcoming Anime")
+                    HomeAnimeList(
+                        pagingItems = pagingItemsTopUpcoming,
+                        onErrorClick = { homeViewModel.fetchAnimeTopUpcomingPaging() })
+                    8.spacer()
+                    HomeAnimeHeading(title = "Most Popular Anime All the Time")
+                    HomeAnimeList(
+                        pagingItems = pagingItemsTopMostPopular,
+                        onErrorClick = { homeViewModel.fetchAnimeTopMostPopularPaging() })
+                    8.spacer()
                 }
             }
         }
@@ -136,15 +156,25 @@ fun HomeAnimeHeading(title: String) {
 }
 
 @Composable
-fun HomeAnimeList(pagingItems: LazyPagingItems<AnimeResponse>, onErrorClick: () -> Unit) {
+fun HomeAnimeList(
+    pagingItems: LazyPagingItems<AnimeResponse>,
+    onErrorClick: () -> Unit,
+    errorMessageMain: String? = ""
+) {
     val context = LocalContext.current
 
     when (pagingItems.loadState.refresh) {
         is LoadState.NotLoading -> {
-            AnimeComponent(pagingItems = pagingItems, context = context)
+            Timber.e("LoadState.NotLoading || errorMessageMain => $errorMessageMain")
+            AnimeComponent(
+                pagingItems = pagingItems,
+                context = context,
+                errorMessage = errorMessageMain
+            )
         }
 
         is LoadState.Error -> {
+            Timber.e("LoadState.Error || errorMessageMain => $errorMessageMain")
             val error = pagingItems.loadState.refresh as LoadState.Error
             val errorMessage = when (error.error) {
                 is HttpException -> "Sorry, Something went wrong!\nTap to retry"
@@ -160,7 +190,7 @@ fun HomeAnimeList(pagingItems: LazyPagingItems<AnimeResponse>, onErrorClick: () 
                     }
             ) {
                 Text(
-                    text = errorMessage,
+                    text = if (!errorMessageMain.isNullOrEmpty()) errorMessageMain else errorMessage,
                     textAlign = TextAlign.Center,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Light,
@@ -170,10 +200,31 @@ fun HomeAnimeList(pagingItems: LazyPagingItems<AnimeResponse>, onErrorClick: () 
             }
         }
 
-        else -> {
+        is LoadState.Loading -> {
+            Timber.e("LoadState.Loading || errorMessageMain => $errorMessageMain")
             LoadingScreen()
         }
+    }
+}
 
+@Composable
+fun ErrorScreen(errorMessage: String, modifier: Modifier = Modifier) {
+    Box(contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(161.25.dp) // maintain the vertical space between two categories
+            .clickable {
+//                onErrorClick()
+            }
+    ) {
+        Text(
+            text = errorMessage,
+            textAlign = TextAlign.Center,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Light,
+            color = Color(0xFFE28B8B),
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }
 
@@ -190,89 +241,93 @@ fun LoadingScreen(modifier: Modifier = Modifier) {
 @Composable
 fun AnimeComponent(
     pagingItems: LazyPagingItems<AnimeResponse>,
-    context: Context
+    context: Context,
+    errorMessage: String? = ""
 ) {
-    LazyRow(
-        contentPadding = PaddingValues(end = 16.dp)
-    ) {
+    if (pagingItems.itemCount == 0)
+        ErrorScreen(errorMessage = errorMessage ?: "")
+    else
+        LazyRow(
+            contentPadding = PaddingValues(end = 16.dp)
+        ) {
 
-        items(pagingItems.itemCount) { itemCount ->
-            val liked = remember { mutableStateOf(pagingItems[itemCount]?.favourite) }
-            Box(
-                contentAlignment = Alignment.BottomStart,
-                modifier = Modifier
-                    .width(205.dp)
-                    .height(255.dp)
-                    .padding(start = 16.dp)
-            ) {
-                GlideImage(
-                    imageModel = { pagingItems[itemCount]?.images?.webp?.imageUrl ?: "" },
-                    imageOptions = ImageOptions(
-                        contentScale = ContentScale.Crop
-                    ),
-                    loading = { LoadingScreen() },
+            items(pagingItems.itemCount) { itemCount ->
+                val liked = remember { mutableStateOf(pagingItems[itemCount]?.favourite) }
+                Box(
+                    contentAlignment = Alignment.BottomStart,
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .width(205.dp)
+                        .height(255.dp)
+                        .padding(start = 16.dp)
+                ) {
+                    GlideImage(
+                        imageModel = { pagingItems[itemCount]?.images?.webp?.imageUrl ?: "" },
+                        imageOptions = ImageOptions(
+                            contentScale = ContentScale.Crop
+                        ),
+                        loading = { LoadingScreen() },
+                        modifier = Modifier
+                            .fillMaxWidth()
 //                        .padding(4.dp)
 //                            .height(200.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .clickable {
-                            Toast
-                                .makeText(
-                                    context,
-                                    pagingItems[itemCount]?.title ?: "",
-                                    Toast.LENGTH_SHORT
-                                )
-                                .show()
-                        }
-                )
-                Row(
-                    modifier = Modifier
-//                        .padding(16.dp, 16.dp, 0.dp, 16.dp)
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(bottomStart = 8.dp, bottomEnd = 8.dp))
-                        .background(color = Color.Black.copy(alpha = 0.5f)),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column(
+                            .clip(RoundedCornerShape(8.dp))
+                            .clickable {
+                                Toast
+                                    .makeText(
+                                        context,
+                                        pagingItems[itemCount]?.title ?: "",
+                                        Toast.LENGTH_SHORT
+                                    )
+                                    .show()
+                            }
+                    )
+                    Row(
                         modifier = Modifier
-                            .weight(3f)
-                            .padding(top = 8.dp, start = 8.dp, end = 0.dp, bottom = 8.dp)
+//                        .padding(16.dp, 16.dp, 0.dp, 16.dp)
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(bottomStart = 8.dp, bottomEnd = 8.dp))
+                            .background(color = Color.Black.copy(alpha = 0.5f)),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(
-                            text = pagingItems[itemCount]?.title ?: "",
-                            style = MaterialTheme.typography.titleSmall,
-                            color = Color.White,
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        Text(
-                            text = pagingItems[itemCount]?.titleJapanese ?: "",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color.White,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-                    IconButton(
-                        modifier = Modifier.weight(1f),
-                        onClick = { liked.value = !liked.value!! })
-                    {
-                        val tint by animateColorAsState(
-                            if (liked.value!!) Color.Red
-                            else Color.LightGray, label = ""
-                        )
-                        Icon(
-                            if (liked.value!!) Icons.Default.Favorite else Icons.Outlined.FavoriteBorder,
-                            contentDescription = "",
-                            tint = tint
-                        )
+                        Column(
+                            modifier = Modifier
+                                .weight(3f)
+                                .padding(top = 8.dp, start = 8.dp, end = 0.dp, bottom = 8.dp)
+                        ) {
+                            Text(
+                                text = pagingItems[itemCount]?.title ?: "",
+                                style = MaterialTheme.typography.titleSmall,
+                                color = Color.White,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                            Text(
+                                text = pagingItems[itemCount]?.titleJapanese ?: "",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = Color.White,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                        IconButton(
+                            modifier = Modifier.weight(1f),
+                            onClick = { liked.value = !liked.value!! })
+                        {
+                            val tint by animateColorAsState(
+                                if (liked.value!!) Color.Red
+                                else Color.LightGray, label = ""
+                            )
+                            Icon(
+                                if (liked.value!!) Icons.Default.Favorite else Icons.Outlined.FavoriteBorder,
+                                contentDescription = "",
+                                tint = tint
+                            )
+                        }
                     }
                 }
             }
         }
-    }
 
 }
 

@@ -70,7 +70,7 @@ class LoginRDS @Inject constructor(
         error: () -> Unit,
         start: () -> Unit
     ) = flow {
-        val response = animeEndpoints.getAnimeSeason2(page)
+        val response = animeEndpoints.getAnimeSeasonPaging(page)
         response.suspendOnSuccess {
             emit(data.data)
         }.onError {
@@ -88,7 +88,7 @@ class LoginRDS @Inject constructor(
         onError: (String) -> Unit
     ) = flow {
         // request API network call asynchronously.
-        animeEndpoints.getAnimeSeason2(page)
+        animeEndpoints.getAnimeSeasonPaging(page)
             // handle the case when the API request gets a success response.
             .suspendOnSuccess {
                 emit(data.data)

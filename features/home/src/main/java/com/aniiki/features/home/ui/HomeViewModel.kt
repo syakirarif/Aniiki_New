@@ -44,6 +44,20 @@ class HomeViewModel @Inject constructor(
     private var _animeTopAiringPaging = mutableStateOf<Flow<PagingData<AnimeResponse>>>(emptyFlow())
     val animeTopAiringPaging: State<Flow<PagingData<AnimeResponse>>> get() = _animeTopAiringPaging
 
+    private var _animeTopUpcomingPaging =
+        mutableStateOf<Flow<PagingData<AnimeResponse>>>(emptyFlow())
+    val animeTopUpcomingPaging: State<Flow<PagingData<AnimeResponse>>> get() = _animeTopUpcomingPaging
+
+    private var _animeTopAiring = mutableStateOf<MutableList<AnimeResponse>>(mutableListOf())
+    val animeTopAiring: State<List<AnimeResponse>> get() = _animeTopAiring
+
+    private var _animeTopMostPopularPaging =
+        mutableStateOf<Flow<PagingData<AnimeResponse>>>(emptyFlow())
+    val animeTopMostPopularPaging: State<Flow<PagingData<AnimeResponse>>> get() = _animeTopMostPopularPaging
+
+    private var _errorMessage = mutableStateOf<String>("")
+    val errorMessage: State<String> get() = _errorMessage
+
     init {
 //        viewModelScope.launch(Dispatchers.IO) {
 //            animeFlow.collectLatest {
@@ -51,19 +65,54 @@ class HomeViewModel @Inject constructor(
 //            }
 //        }
         fetchAnimePaging()
-        fetchAnimeTopAiringPaging()
+//        fetchAnimeTopAiringPaging()
+//        fetchAnimeTopUpcomingPaging()
+//        fetchAnimeTopMostPopularPaging()
     }
 
     fun fetchAnimePaging() {
         viewModelScope.launch {
-            _animePaging.value = homeRepository.getAnimeListPaging().cachedIn(viewModelScope)
+            _animePaging.value = homeRepository.getAnimeListPaging(onError = {
+                _errorMessage.value = it
+            }).cachedIn(viewModelScope)
         }
+    }
+
+    fun fetchAnimeTopAiring() {
+        viewModelScope.launch {
+            homeRepository.getAnimeTopAiring(
+                onSuccess = {},
+                onError = {}
+            ).also {
+
+            }
+        }
+//        _animeTopAiring.value =
+//            homeRepository.getAnimeTopAiring(
+//                onSuccess = {},
+//                onError = {}
+//            )
+
     }
 
     fun fetchAnimeTopAiringPaging() {
         viewModelScope.launch {
             _animeTopAiringPaging.value =
                 homeRepository.getAnimeTopAiringPaging().cachedIn(viewModelScope)
+        }
+    }
+
+    fun fetchAnimeTopUpcomingPaging() {
+        viewModelScope.launch {
+            _animeTopUpcomingPaging.value =
+                homeRepository.getAnimeTopUpcomingPaging().cachedIn(viewModelScope)
+        }
+    }
+
+    fun fetchAnimeTopMostPopularPaging() {
+        viewModelScope.launch {
+            _animeTopMostPopularPaging.value =
+                homeRepository.getAnimeTopMostPopularPaging().cachedIn(viewModelScope)
         }
     }
 

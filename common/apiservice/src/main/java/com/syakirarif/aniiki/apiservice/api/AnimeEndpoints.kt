@@ -1,10 +1,6 @@
 package com.syakirarif.aniiki.apiservice.api
 
-import com.skydoves.retrofit.adapters.paging.NetworkPagingSource
-import com.skydoves.retrofit.adapters.paging.annotations.PagingKey
-import com.skydoves.retrofit.adapters.paging.annotations.PagingKeyConfig
 import com.skydoves.sandwich.ApiResponse
-import com.syakirarif.aniiki.apiservice.paging.AnimePagingMapper
 import com.syakirarif.aniiki.apiservice.response.anime.AnimeResponse
 import retrofit2.Response
 import retrofit2.http.GET
@@ -14,11 +10,20 @@ interface AnimeEndpoints {
     @GET("seasons/2023/fall")
     suspend fun getAnimeSeason(): Response<ApiBaseResponse<List<AnimeResponse>>>
 
-    @GET("seasons/2023/fall?limit=20&sfw&filter=tv")
-    suspend fun getAnimeSeason2(@Query("page") page: Int): ApiResponse<JikanBaseResponse>
+    @GET("seasons/2023/fall?limit=20&sfw&filter=hahaha")
+    suspend fun getAnimeSeasonPaging(@Query("page") page: Int): ApiResponse<JikanBaseResponse>
 
     @GET("top/anime?type=tv&filter=airing&sfw=true&limit=10")
-    suspend fun getAnimeTopAiring(@Query("page") page: Int): ApiResponse<JikanBaseResponse>
+    suspend fun getAnimeTopAiring(): ApiResponse<JikanBaseResponse>
+
+    @GET("top/anime?type=tv&filter=airing&sfw=true&limit=10")
+    suspend fun getAnimeTopAiringPaging(@Query("page") page: Int): ApiResponse<JikanBaseResponse>
+
+    @GET("top/anime?type=tv&filter=upcoming&sfw=true&limit=10")
+    suspend fun getAnimeTopUpcomingPaging(@Query("page") page: Int): ApiResponse<JikanBaseResponse>
+
+    @GET("top/anime?type=tv&filter=bypopularity&sfw=true&limit=10")
+    suspend fun getAnimeTopMostPopularPaging(@Query("page") page: Int): ApiResponse<JikanBaseResponse>
 
 //    @GET("seasons/2023/fall")
 //    @PagingKeyConfig(

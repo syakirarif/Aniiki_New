@@ -10,7 +10,9 @@ import com.syakirarif.aniiki.core.utils.debugPrint
 import retrofit2.HttpException
 import java.io.IOException
 
-class TopAiringPagingSource(private val animeEndpoints: AnimeEndpoints) :
+class TopMostPopularPagingSource(
+    private val animeEndpoints: AnimeEndpoints
+) :
     PagingSource<Int, AnimeResponse>() {
     override fun getRefreshKey(state: PagingState<Int, AnimeResponse>): Int? = state.anchorPosition
 
@@ -20,7 +22,7 @@ class TopAiringPagingSource(private val animeEndpoints: AnimeEndpoints) :
             debugPrint("nextPage => $nextPage")
             val animes: MutableList<AnimeResponse> = mutableListOf()
 
-            val response = animeEndpoints.getAnimeTopAiringPaging(nextPage)
+            val response = animeEndpoints.getAnimeTopMostPopularPaging(nextPage)
             var pagination = PaginationResponse()
             response.suspendOnSuccess {
                 animes.addAll(data.data)
