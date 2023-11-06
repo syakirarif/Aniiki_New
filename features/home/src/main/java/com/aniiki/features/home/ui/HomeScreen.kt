@@ -55,6 +55,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -62,6 +64,8 @@ import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.glide.GlideImage
 import com.syakirarif.aniiki.apiservice.response.anime.AnimeResponse
 import com.syakirarif.aniiki.compose.spacer
+import com.syakirarif.aniiki.core.utils.getCurrentAnimeSeason
+import com.syakirarif.aniiki.core.utils.getCurrentYear
 import retrofit2.HttpException
 import timber.log.Timber
 import java.io.IOException
@@ -70,74 +74,75 @@ import java.io.IOException
 fun HomeScreenApp(homeViewModel: HomeViewModel) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
-    val pagingItems = homeViewModel.animePaging.value.collectAsLazyPagingItems()
-    val pagingItemsTopAiring = homeViewModel.animeTopAiringPaging.value.collectAsLazyPagingItems()
-    val pagingItemsTopUpcoming =
-        homeViewModel.animeTopUpcomingPaging.value.collectAsLazyPagingItems()
-    val pagingItemsTopMostPopular =
-        homeViewModel.animeTopMostPopularPaging.value.collectAsLazyPagingItems()
-//    val errorMessage by homeViewModel.errorMessage
-//    val topAnimeAiring: List<AnimeResponse> by homeViewModel.animeTopAiring.collectAsStateWithLifecycle(initialValue = listOf())
-//    val topAnimeAiring: List<AnimeResponse> by homeViewModel.animeTopAiring.collectAsState(initial = listOf())
-//    val topAnimeAiring by remember { mutableStateOf(_topAnimeAiring) }
-//    val isLoading: Boolean by homeViewModel.isLoading
-    val homeUiState by homeViewModel.homeUiState.collectAsState()
-    val animeTopUpcomingState by homeViewModel.animeTopUpcomingState.collectAsState()
-//    val animeTopMostPopularState by homeViewModel.animeTopMostPopularState.collectAsState()
-    //    val homeUiState2: HomeUiState by homeViewModel.animeTopAiring2.collectAsStateWithLifecycle(initialValue = HomeUiState(isLoading = true))
+    val navController = rememberNavController()
+    val currentBackStack by navController.currentBackStackEntryAsState()
+    val currentDestination = currentBackStack?.destination
+    val currentScreen =
+        homeTabRowScreens.find { it.route == currentDestination?.route } ?: Home
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = { HomeTopAppBar(scrollBehavior = scrollBehavior) }
+        topBar = { HomeTopAppBar(scrollBehavior = scrollBehavior) },
+        bottomBar = {
+            HomeBottomNavigation(
+                allScreens = homeTabRowScreens,
+                onTabSelected = { newScreen ->
+                    navController.navigateSingleTopTo(newScreen.route)
+                },
+                currentScreen = currentScreen
+            )
+        }
+    ) { innerPadding ->
+        HomeNavHost(
+            navHostController = navController,
+            homeViewModel = homeViewModel,
+            modifier = Modifier.padding(innerPadding)
+        )
+    }
+}
+
+@Composable
+fun HomeMainScreen(homeViewModel: HomeViewModel) {
+
+    val animeTopAiring by homeViewModel.animeTopAiring.collectAsState()
+    val animeTopUpcomingState by homeViewModel.animeTopUpcomingState.collectAsState()
+    val animeSeasonState by homeViewModel.animeSeasonState.collectAsState()
+    val animeSeasonPagingItems = animeSeasonState.dataPaging.collectAsLazyPagingItems()
+
+    val season =
+        "${getCurrentAnimeSeason().replaceFirstChar { it.uppercase() }} ${getCurrentYear()}"
+
+    Surface(
+        modifier = Modifier
+            .fillMaxSize()
     ) {
-        Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(it)
+        LazyColumn(
+            modifier = Modifier.fillMaxSize()
         ) {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize()
-            ) {
-                item {
-                    HomeAnimeHeading(title = "Summer 2023 Anime")
-                    HomeAnimeList(
-                        pagingItems = pagingItems,
-                        onErrorClick = { homeViewModel.fetchAnimePaging() },
-                        errorMessageMain = ""
-                    )
-                    8.spacer()
-                    HomeAnimeHeading(title = "Top Airing Anime")
-                    HomeAnimeList(
-//                        isLoading = homeUiState.isLoading,
-//                        isError = homeUiState.isError,
-//                        data = homeUiState.data,
-                        homeUiState = homeUiState,
-                        onErrorClick = { },
-//                        errorMessage = homeUiState.errorMessage
-                    )
-                    8.spacer()
-                    HomeAnimeHeading(title = "Top Upcoming Anime")
-                    HomeAnimeList(
-                        homeUiState = animeTopUpcomingState,
-                        onErrorClick = { },
-                    )
-//                    HomeAnimeList(
-//                        pagingItems = pagingItemsTopUpcoming,
-//                        onErrorClick = { homeViewModel.fetchAnimeTopUpcomingPaging() })
-                    8.spacer()
-//                    HomeAnimeHeading(title = "Most Popular Anime All the Time")
-//                    HomeAnimeList(
-//                        homeUiState = animeTopMostPopularState,
-//                        onErrorClick = {  },
-//                    )
-////                    HomeAnimeList(
-////                        pagingItems = pagingItemsTopMostPopular,
-////                        onErrorClick = { homeViewModel.fetchAnimeTopMostPopularPaging() })
-//                    8.spacer()
-                }
+            item {
+                HomeAnimeHeading(title = "$season Anime")
+                HomeAnimeList(
+                    pagingItems = animeSeasonPagingItems,
+                    onErrorClick = { homeViewModel.fetchAnimePaging() },
+                    errorMessageMain = animeSeasonState.errorMessage
+                )
+                8.spacer()
+                HomeAnimeHeading(title = "Top 10 Airing Anime")
+                HomeAnimeList(
+                    homeUiState = animeTopAiring,
+                    onErrorClick = { },
+                )
+                8.spacer()
+                HomeAnimeHeading(title = "Top 10 Upcoming Anime")
+                HomeAnimeList(
+                    homeUiState = animeTopUpcomingState,
+                    onErrorClick = { },
+                )
+                8.spacer()
             }
         }
     }
+
 }
 
 @Composable
@@ -178,75 +183,34 @@ fun HomeAnimeHeading(title: String) {
 
 @Composable
 fun HomeAnimeList(
-//    isLoading: Boolean,
-//    isError: Boolean,
-//    data: List<AnimeResponse>,
     homeUiState: HomeUiState,
     onErrorClick: () -> Unit,
-//    errorMessage: String
 ) {
     val context = LocalContext.current
 
     if (homeUiState.isLoading) {
-        Timber.e("HomeAnimeList - isLoading")
+        Timber.e("HomeAnimeList | isLoading")
         LoadingScreen()
     } else {
 
-        if (homeUiState.isError) {
-            Timber.e("HomeAnimeList - isNotLoading - Empty")
-            Box(contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(161.25.dp) // maintain the vertical space between two categories
-                    .clickable {
-                        onErrorClick()
-                    }
-            ) {
-                Text(
-                    text = homeUiState.errorMessage,
-                    textAlign = TextAlign.Center,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Light,
-                    color = Color(0xFFE28B8B),
-                    modifier = Modifier.fillMaxWidth()
+        if (!homeUiState.isError) {
+            Timber.e("HomeAnimeList | isNotLoading | Available - ${homeUiState.data.size}")
+            if (homeUiState.data.isNotEmpty()) {
+                AnimeComponent(
+                    items = homeUiState.data,
+                    context = context,
+                    onErrorClick = onErrorClick
                 )
+            } else {
+                Timber.e("HomeAnimeList | isNotLoading | Empty - ${homeUiState.data.size}")
+                ErrorScreen(errorMessage = "Empty", onErrorClick = onErrorClick)
             }
+
         } else {
-            Timber.e("HomeAnimeList - isNotLoading - Available - ${homeUiState.data.size}")
-            AnimeComponent(items = homeUiState.data, context = context)
+            Timber.e("HomeAnimeList | isError | errorMessage => ${homeUiState.errorMessage}")
+            ErrorScreen(errorMessage = homeUiState.errorMessage, onErrorClick = onErrorClick)
         }
     }
-
-//    when(homeUiState){
-//        is HomeUiState.Loading -> {
-//            Timber.e("HomeUiState.Loading")
-//            LoadingScreen()
-//        }
-//        is HomeUiState.Error -> {
-//            Timber.e("HomeUiState.Error")
-//            Box(contentAlignment = Alignment.Center,
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .height(161.25.dp) // maintain the vertical space between two categories
-//                    .clickable {
-//                        onErrorClick()
-//                    }
-//            ) {
-//                Text(
-//                    text = homeUiState.errorMessage,
-//                    textAlign = TextAlign.Center,
-//                    fontSize = 18.sp,
-//                    fontWeight = FontWeight.Light,
-//                    color = Color(0xFFE28B8B),
-//                    modifier = Modifier.fillMaxWidth()
-//                )
-//            }
-//        }
-//        is HomeUiState.Complete -> {
-//            Timber.e("HomeUiState.Complete")
-//            AnimeComponent(items = items, context = context)
-//        }
-//    }
 }
 
 @Composable
@@ -263,7 +227,8 @@ fun HomeAnimeList(
             AnimeComponent(
                 pagingItems = pagingItems,
                 context = context,
-                errorMessage = errorMessageMain
+                errorMessage = errorMessageMain,
+                onErrorClick = onErrorClick
             )
         }
 
@@ -275,23 +240,10 @@ fun HomeAnimeList(
                 is IOException -> "Connection failed. Tap to retry!"
                 else -> "Failed! Tap to retry!"
             }
-            Box(contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(161.25.dp) // maintain the vertical space between two categories
-                    .clickable {
-                        onErrorClick()
-                    }
-            ) {
-                Text(
-                    text = if (!errorMessageMain.isNullOrEmpty()) errorMessageMain else errorMessage,
-                    textAlign = TextAlign.Center,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Light,
-                    color = Color(0xFFE28B8B),
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
+            ErrorScreen(
+                errorMessage = if (!errorMessageMain.isNullOrEmpty()) errorMessageMain else errorMessage,
+                onErrorClick = onErrorClick
+            )
         }
 
         is LoadState.Loading -> {
@@ -302,13 +254,13 @@ fun HomeAnimeList(
 }
 
 @Composable
-fun ErrorScreen(errorMessage: String, modifier: Modifier = Modifier) {
+fun ErrorScreen(errorMessage: String, onErrorClick: () -> Unit, modifier: Modifier = Modifier) {
     Box(contentAlignment = Alignment.Center,
         modifier = Modifier
             .fillMaxWidth()
             .height(161.25.dp) // maintain the vertical space between two categories
             .clickable {
-//                onErrorClick()
+                onErrorClick()
             }
     ) {
         Text(
@@ -336,10 +288,11 @@ fun LoadingScreen(modifier: Modifier = Modifier) {
 fun AnimeComponent(
     pagingItems: LazyPagingItems<AnimeResponse>,
     context: Context,
-    errorMessage: String? = ""
+    errorMessage: String? = "",
+    onErrorClick: () -> Unit
 ) {
     if (pagingItems.itemCount == 0)
-        ErrorScreen(errorMessage = errorMessage ?: "")
+        ErrorScreen(errorMessage = errorMessage ?: "", onErrorClick = onErrorClick)
     else
         LazyRow(
             contentPadding = PaddingValues(end = 16.dp)
@@ -363,10 +316,11 @@ fun AnimeComponent(
 fun AnimeComponent(
     items: List<AnimeResponse>,
     context: Context,
-    errorMessage: String? = ""
+    errorMessage: String? = "",
+    onErrorClick: () -> Unit
 ) {
     if (items.isEmpty())
-        ErrorScreen(errorMessage = errorMessage ?: "")
+        ErrorScreen(errorMessage = errorMessage ?: "", onErrorClick = onErrorClick)
     else
         LazyRow(
             contentPadding = PaddingValues(end = 16.dp)

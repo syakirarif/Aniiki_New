@@ -15,8 +15,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.aniiki.features.login.AnimeScreen
-import com.aniiki.features.login.LoginScreen
 import com.syakirarif.aniiki.compose.theme.BidayahTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -28,7 +26,6 @@ class MainActivity : AppCompatActivity() {
         setContent {
             BidayahTheme {
 //                LoginScreen()
-                AnimeScreen()
             }
         }
     }

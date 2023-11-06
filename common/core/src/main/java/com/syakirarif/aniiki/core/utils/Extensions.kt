@@ -9,7 +9,10 @@ import androidx.fragment.app.Fragment
 import timber.log.Timber
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.format.TextStyle
 import java.util.Locale
+
 
 fun String.asDateTime(): String {
     return try {
@@ -98,4 +101,38 @@ fun debugPrint(head: String? = "", msg: String? = "") {
 
 fun debugPrint(msg: String? = "") {
     Timber.e(msg)
+}
+
+fun getCurrentYear(): String {
+    return LocalDate.now().year.toString()
+}
+
+fun getCurrentMonth(): String {
+    return LocalDate.now().month.getDisplayName(TextStyle.FULL, Locale.ENGLISH)
+}
+
+fun getCurrentDay(): String {
+    return LocalDate.now().dayOfWeek.getDisplayName(TextStyle.FULL, Locale.ENGLISH)
+}
+
+fun getCurrentAnimeSeason(): String {
+    val month = getCurrentMonth().lowercase()
+
+    val winter = arrayOf("january", "february", "march")
+    val spring = arrayOf("april", "may", "june")
+    val summer = arrayOf("july", "august", "september")
+    val fall = arrayOf("october", "november", "december")
+
+    var season = ""
+
+    if (winter.contains(month.lowercase())) {
+        season = "winter"
+    } else if (spring.contains(month.lowercase())) {
+        season = "spring"
+    } else if (summer.contains(month.lowercase())) {
+        season = "summer"
+    } else if (fall.contains(month.lowercase())) {
+        season = "fall"
+    }
+    return season
 }

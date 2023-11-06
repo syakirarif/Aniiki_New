@@ -29,6 +29,7 @@ dependencies {
     api(AndroidX.constraintLayout.compose)
     api(COIL.compose)
     api(AndroidX.palette)
+    api(AndroidX.navigation.compose)
 
     
     // Landscapist
