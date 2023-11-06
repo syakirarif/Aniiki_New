@@ -12,7 +12,7 @@ import org.json.JSONObject
 import retrofit2.HttpException
 import java.io.IOException
 
-class HomePagingSource(
+class AnimeSeasonPagingSource(
     private val animeEndpoints: AnimeEndpoints,
     private val onError: (String) -> Unit
 ) :
@@ -28,9 +28,9 @@ class HomePagingSource(
             val response = animeEndpoints.getAnimeSeasonPaging(nextPage)
             var pagination = PaginationResponse()
             response.onSuccess {
-                animes.addAll(data.data)
                 if (data.pagination != null)
                     pagination = data.pagination!!
+                animes.addAll(data.data)
             }.onError {
                 val jsonObject = JSONObject(this.toString())
                 onError(jsonObject.getString("error"))

@@ -21,6 +21,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -38,6 +39,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -68,15 +70,21 @@ import java.io.IOException
 fun HomeScreenApp(homeViewModel: HomeViewModel) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
-    homeViewModel.fetchAnimePaging()
-
     val pagingItems = homeViewModel.animePaging.value.collectAsLazyPagingItems()
     val pagingItemsTopAiring = homeViewModel.animeTopAiringPaging.value.collectAsLazyPagingItems()
     val pagingItemsTopUpcoming =
         homeViewModel.animeTopUpcomingPaging.value.collectAsLazyPagingItems()
     val pagingItemsTopMostPopular =
         homeViewModel.animeTopMostPopularPaging.value.collectAsLazyPagingItems()
-    val errorMessage by homeViewModel.errorMessage
+//    val errorMessage by homeViewModel.errorMessage
+//    val topAnimeAiring: List<AnimeResponse> by homeViewModel.animeTopAiring.collectAsStateWithLifecycle(initialValue = listOf())
+//    val topAnimeAiring: List<AnimeResponse> by homeViewModel.animeTopAiring.collectAsState(initial = listOf())
+//    val topAnimeAiring by remember { mutableStateOf(_topAnimeAiring) }
+//    val isLoading: Boolean by homeViewModel.isLoading
+    val homeUiState by homeViewModel.homeUiState.collectAsState()
+    val animeTopUpcomingState by homeViewModel.animeTopUpcomingState.collectAsState()
+//    val animeTopMostPopularState by homeViewModel.animeTopMostPopularState.collectAsState()
+    //    val homeUiState2: HomeUiState by homeViewModel.animeTopAiring2.collectAsStateWithLifecycle(initialValue = HomeUiState(isLoading = true))
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -95,24 +103,37 @@ fun HomeScreenApp(homeViewModel: HomeViewModel) {
                     HomeAnimeList(
                         pagingItems = pagingItems,
                         onErrorClick = { homeViewModel.fetchAnimePaging() },
-                        errorMessageMain = errorMessage
+                        errorMessageMain = ""
                     )
                     8.spacer()
                     HomeAnimeHeading(title = "Top Airing Anime")
                     HomeAnimeList(
-                        pagingItems = pagingItemsTopAiring,
-                        onErrorClick = { homeViewModel.fetchAnimeTopAiringPaging() })
+//                        isLoading = homeUiState.isLoading,
+//                        isError = homeUiState.isError,
+//                        data = homeUiState.data,
+                        homeUiState = homeUiState,
+                        onErrorClick = { },
+//                        errorMessage = homeUiState.errorMessage
+                    )
                     8.spacer()
                     HomeAnimeHeading(title = "Top Upcoming Anime")
                     HomeAnimeList(
-                        pagingItems = pagingItemsTopUpcoming,
-                        onErrorClick = { homeViewModel.fetchAnimeTopUpcomingPaging() })
+                        homeUiState = animeTopUpcomingState,
+                        onErrorClick = { },
+                    )
+//                    HomeAnimeList(
+//                        pagingItems = pagingItemsTopUpcoming,
+//                        onErrorClick = { homeViewModel.fetchAnimeTopUpcomingPaging() })
                     8.spacer()
-                    HomeAnimeHeading(title = "Most Popular Anime All the Time")
-                    HomeAnimeList(
-                        pagingItems = pagingItemsTopMostPopular,
-                        onErrorClick = { homeViewModel.fetchAnimeTopMostPopularPaging() })
-                    8.spacer()
+//                    HomeAnimeHeading(title = "Most Popular Anime All the Time")
+//                    HomeAnimeList(
+//                        homeUiState = animeTopMostPopularState,
+//                        onErrorClick = {  },
+//                    )
+////                    HomeAnimeList(
+////                        pagingItems = pagingItemsTopMostPopular,
+////                        onErrorClick = { homeViewModel.fetchAnimeTopMostPopularPaging() })
+//                    8.spacer()
                 }
             }
         }
@@ -153,6 +174,79 @@ fun HomeAnimeHeading(title: String) {
             tint = MaterialTheme.colorScheme.primary
         )
     }
+}
+
+@Composable
+fun HomeAnimeList(
+//    isLoading: Boolean,
+//    isError: Boolean,
+//    data: List<AnimeResponse>,
+    homeUiState: HomeUiState,
+    onErrorClick: () -> Unit,
+//    errorMessage: String
+) {
+    val context = LocalContext.current
+
+    if (homeUiState.isLoading) {
+        Timber.e("HomeAnimeList - isLoading")
+        LoadingScreen()
+    } else {
+
+        if (homeUiState.isError) {
+            Timber.e("HomeAnimeList - isNotLoading - Empty")
+            Box(contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(161.25.dp) // maintain the vertical space between two categories
+                    .clickable {
+                        onErrorClick()
+                    }
+            ) {
+                Text(
+                    text = homeUiState.errorMessage,
+                    textAlign = TextAlign.Center,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Light,
+                    color = Color(0xFFE28B8B),
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        } else {
+            Timber.e("HomeAnimeList - isNotLoading - Available - ${homeUiState.data.size}")
+            AnimeComponent(items = homeUiState.data, context = context)
+        }
+    }
+
+//    when(homeUiState){
+//        is HomeUiState.Loading -> {
+//            Timber.e("HomeUiState.Loading")
+//            LoadingScreen()
+//        }
+//        is HomeUiState.Error -> {
+//            Timber.e("HomeUiState.Error")
+//            Box(contentAlignment = Alignment.Center,
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .height(161.25.dp) // maintain the vertical space between two categories
+//                    .clickable {
+//                        onErrorClick()
+//                    }
+//            ) {
+//                Text(
+//                    text = homeUiState.errorMessage,
+//                    textAlign = TextAlign.Center,
+//                    fontSize = 18.sp,
+//                    fontWeight = FontWeight.Light,
+//                    color = Color(0xFFE28B8B),
+//                    modifier = Modifier.fillMaxWidth()
+//                )
+//            }
+//        }
+//        is HomeUiState.Complete -> {
+//            Timber.e("HomeUiState.Complete")
+//            AnimeComponent(items = items, context = context)
+//        }
+//    }
 }
 
 @Composable
@@ -252,83 +346,129 @@ fun AnimeComponent(
         ) {
 
             items(pagingItems.itemCount) { itemCount ->
-                val liked = remember { mutableStateOf(pagingItems[itemCount]?.favourite) }
-                Box(
-                    contentAlignment = Alignment.BottomStart,
-                    modifier = Modifier
-                        .width(205.dp)
-                        .height(255.dp)
-                        .padding(start = 16.dp)
-                ) {
-                    GlideImage(
-                        imageModel = { pagingItems[itemCount]?.images?.webp?.imageUrl ?: "" },
-                        imageOptions = ImageOptions(
-                            contentScale = ContentScale.Crop
-                        ),
-                        loading = { LoadingScreen() },
-                        modifier = Modifier
-                            .fillMaxWidth()
-//                        .padding(4.dp)
-//                            .height(200.dp)
-                            .clip(RoundedCornerShape(8.dp))
-                            .clickable {
-                                Toast
-                                    .makeText(
-                                        context,
-                                        pagingItems[itemCount]?.title ?: "",
-                                        Toast.LENGTH_SHORT
-                                    )
-                                    .show()
-                            }
-                    )
-                    Row(
-                        modifier = Modifier
-//                        .padding(16.dp, 16.dp, 0.dp, 16.dp)
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(bottomStart = 8.dp, bottomEnd = 8.dp))
-                            .background(color = Color.Black.copy(alpha = 0.5f)),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .weight(3f)
-                                .padding(top = 8.dp, start = 8.dp, end = 0.dp, bottom = 8.dp)
-                        ) {
-                            Text(
-                                text = pagingItems[itemCount]?.title ?: "",
-                                style = MaterialTheme.typography.titleSmall,
-                                color = Color.White,
-                                maxLines = 2,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                            Text(
-                                text = pagingItems[itemCount]?.titleJapanese ?: "",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = Color.White,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
-                        IconButton(
-                            modifier = Modifier.weight(1f),
-                            onClick = { liked.value = !liked.value!! })
-                        {
-                            val tint by animateColorAsState(
-                                if (liked.value!!) Color.Red
-                                else Color.LightGray, label = ""
-                            )
-                            Icon(
-                                if (liked.value!!) Icons.Default.Favorite else Icons.Outlined.FavoriteBorder,
-                                contentDescription = "",
-                                tint = tint
-                            )
-                        }
-                    }
-                }
+
+                AnimeContent(
+                    context = context,
+                    imageUrl = pagingItems[itemCount]?.images?.webp?.imageUrl ?: "",
+                    title = pagingItems[itemCount]?.title ?: "",
+                    titleJapanese = pagingItems[itemCount]?.titleJapanese ?: "",
+                    favourite = pagingItems[itemCount]?.favourite ?: false
+                )
             }
         }
 
+}
+
+@Composable
+fun AnimeComponent(
+    items: List<AnimeResponse>,
+    context: Context,
+    errorMessage: String? = ""
+) {
+    if (items.isEmpty())
+        ErrorScreen(errorMessage = errorMessage ?: "")
+    else
+        LazyRow(
+            contentPadding = PaddingValues(end = 16.dp)
+        ) {
+
+            items(items) { item ->
+
+                AnimeContent(
+                    context = context,
+                    imageUrl = item.images?.webp?.imageUrl ?: "",
+                    title = item.title ?: "",
+                    titleJapanese = item.titleJapanese ?: "",
+                    favourite = item.favourite ?: false
+                )
+            }
+        }
+
+}
+
+@Composable
+fun AnimeContent(
+    context: Context,
+    imageUrl: String,
+    title: String,
+    titleJapanese: String,
+    favourite: Boolean
+) {
+    val liked = remember { mutableStateOf(favourite) }
+
+    Box(
+        contentAlignment = Alignment.BottomStart,
+        modifier = Modifier
+            .width(205.dp)
+            .height(255.dp)
+            .padding(start = 16.dp)
+    ) {
+        GlideImage(
+            imageModel = { imageUrl },
+            imageOptions = ImageOptions(
+                contentScale = ContentScale.Crop
+            ),
+            loading = { LoadingScreen() },
+            modifier = Modifier
+                .fillMaxWidth()
+//                        .padding(4.dp)
+//                            .height(200.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .clickable {
+                    Toast
+                        .makeText(
+                            context,
+                            title,
+                            Toast.LENGTH_SHORT
+                        )
+                        .show()
+                }
+        )
+        Row(
+            modifier = Modifier
+//                        .padding(16.dp, 16.dp, 0.dp, 16.dp)
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(bottomStart = 8.dp, bottomEnd = 8.dp))
+                .background(color = Color.Black.copy(alpha = 0.5f)),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
+                modifier = Modifier
+                    .weight(3f)
+                    .padding(top = 8.dp, start = 8.dp, end = 0.dp, bottom = 8.dp)
+            ) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleSmall,
+                    color = Color.White,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = titleJapanese,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.White,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+            IconButton(
+                modifier = Modifier.weight(1f),
+                onClick = { liked.value = !liked.value })
+            {
+                val tint by animateColorAsState(
+                    if (liked.value) Color.Red
+                    else Color.LightGray, label = ""
+                )
+                Icon(
+                    if (liked.value) Icons.Default.Favorite else Icons.Outlined.FavoriteBorder,
+                    contentDescription = "",
+                    tint = tint
+                )
+            }
+        }
+    }
 }
 
 @Composable
