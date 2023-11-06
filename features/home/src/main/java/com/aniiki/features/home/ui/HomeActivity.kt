@@ -16,6 +16,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class HomeActivity : ComponentActivity() {
 
     private val homeViewModel: HomeViewModel by viewModels()
+    private val scheduleViewModel: ScheduleViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,7 +35,10 @@ class HomeActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    HomeScreenApp(homeViewModel)
+                    HomeScreenApp(
+                        homeViewModel,
+                        scheduleViewModel
+                    )
                 }
             }
 

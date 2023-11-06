@@ -24,23 +24,41 @@ class BasePagingSource(
         return try {
             val animes: MutableList<AnimeResponse> = mutableListOf()
             val response = block(page)
-            var pagination: PaginationResponse?
-            var totalPages: Int? = null
+            var pagination: PaginationResponse? = PaginationResponse()
+            var totalPages: Int? = pagination?.lastVisiblePage
+            var hasNextPage: Boolean? = pagination?.hasNextPage
 
             response.onSuccess {
                 animes.addAll(this.data.data)
                 pagination = data.pagination
                 totalPages = pagination?.lastVisiblePage
+                hasNextPage = pagination?.hasNextPage
             }.onError {
                 val jsonObject = JSONObject(this.toString())
                 onError(jsonObject.getString("error"))
             }
 
+            val nextKey = if (animes.isEmpty()) {
+                null
+            } else {
+                if (totalPages != null) {
+                    if (page > totalPages!!) {
+                        null
+                    } else {
+                        page + (params.loadSize / totalPages!!)
+                    }
+                } else {
+                    null
+                }
+
+            }
+
             LoadResult.Page(
                 data = animes,
                 prevKey = if (page == 1) null else page - 1,
+                nextKey = nextKey
 //                nextKey = if (!pagination.hasNextPage!!) null else pagination.currentPage!! + 1
-                nextKey = if (totalPages != null && page == totalPages) null else page + 1
+//                nextKey = if (page == totalPages && !hasNextPage!!) null else page + 1
             )
         } catch (e: Exception) {
             LoadResult.Error(e)

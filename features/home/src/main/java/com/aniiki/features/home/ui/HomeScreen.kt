@@ -71,7 +71,7 @@ import timber.log.Timber
 import java.io.IOException
 
 @Composable
-fun HomeScreenApp(homeViewModel: HomeViewModel) {
+fun HomeScreenApp(homeViewModel: HomeViewModel, scheduleViewModel: ScheduleViewModel) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     val navController = rememberNavController()
@@ -96,6 +96,7 @@ fun HomeScreenApp(homeViewModel: HomeViewModel) {
         HomeNavHost(
             navHostController = navController,
             homeViewModel = homeViewModel,
+            scheduleViewModel = scheduleViewModel,
             modifier = Modifier.padding(innerPadding)
         )
     }

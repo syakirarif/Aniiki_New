@@ -50,6 +50,13 @@ interface AnimeEndpoints {
         @Query("limit") limit: Int? = DEFAULT_PAGE_SIZE
     ): ApiResponse<JikanBaseResponse>
 
+    @GET("schedules?sfw=true")
+    suspend fun getAnimeSchedule(
+        @Query("page") page: Int,
+        @Query("limit") limit: Int? = DEFAULT_PAGE_SIZE,
+        @Query("filter") day: String
+    ): ApiResponse<JikanBaseResponse>
+
 //    @GET("seasons/2023/fall")
 //    @PagingKeyConfig(
 //        keySize = 20,

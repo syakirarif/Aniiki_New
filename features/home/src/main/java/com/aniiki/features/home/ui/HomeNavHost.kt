@@ -11,6 +11,7 @@ import androidx.navigation.compose.composable
 fun HomeNavHost(
     navHostController: NavHostController,
     homeViewModel: HomeViewModel,
+    scheduleViewModel: ScheduleViewModel,
     modifier: Modifier = Modifier
 ) {
     NavHost(
@@ -22,10 +23,10 @@ fun HomeNavHost(
             HomeMainScreen(homeViewModel = homeViewModel)
         }
         composable(route = Schedule.route) {
-            ScheduleMainScreen(screenName = Schedule.route)
+            ScheduleMainScreen(scheduleViewModel = scheduleViewModel)
         }
         composable(route = Library.route) {
-            ScheduleMainScreen(screenName = Library.route)
+            LibraryMainScreen(screenName = Library.route)
         }
     }
 }
