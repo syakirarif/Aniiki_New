@@ -51,9 +51,14 @@ interface AnimeEndpoints {
     ): ApiResponse<JikanBaseResponse>
 
     @GET("schedules?sfw=true")
-    suspend fun getAnimeSchedule(
+    suspend fun getAnimeSchedulePaging(
         @Query("page") page: Int,
         @Query("limit") limit: Int? = DEFAULT_PAGE_SIZE,
+        @Query("filter") day: String
+    ): ApiResponse<JikanBaseResponse>
+
+    @GET("schedules?sfw=true")
+    suspend fun getAnimeSchedule(
         @Query("filter") day: String
     ): ApiResponse<JikanBaseResponse>
 

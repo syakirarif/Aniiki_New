@@ -20,8 +20,10 @@ fun ScheduleMainScreen(scheduleViewModel: ScheduleViewModel) {
 
     val today = getCurrentDay().replaceFirstChar { it.uppercase() }
 
+    val animeSchedulePagingState by scheduleViewModel.animeSchedulePagingState.collectAsState()
+    val animeSchedulePagingItems = animeSchedulePagingState.dataPaging.collectAsLazyPagingItems()
+
     val animeScheduleState by scheduleViewModel.animeScheduleState.collectAsState()
-    val animeSchedulePagingItems = animeScheduleState.dataPaging.collectAsLazyPagingItems()
 
     Surface(
         modifier = Modifier
@@ -36,10 +38,14 @@ fun ScheduleMainScreen(scheduleViewModel: ScheduleViewModel) {
                 text = "Today's Schedule Anime ($today)",
                 style = MaterialTheme.typography.titleLarge
             )
+//            AnimeGridListPaging(
+//                pagingItems = animeSchedulePagingItems,
+//                onErrorClick = { scheduleViewModel.fetchAnimeSchedulePaging() },
+//                errorMessageMain = animeScheduleState.errorMessage
+//            )
             AnimeGridList(
-                pagingItems = animeSchedulePagingItems,
-                onErrorClick = { scheduleViewModel.fetchAnimeSchedulePaging() },
-                errorMessageMain = animeScheduleState.errorMessage
+                homeUiState = animeScheduleState,
+                onErrorClick = {}
             )
             8.spacer()
         }

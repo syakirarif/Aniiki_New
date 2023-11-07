@@ -6,8 +6,10 @@ import androidx.paging.cachedIn
 import com.aniiki.features.home.repository.ScheduleRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -15,21 +17,28 @@ import javax.inject.Inject
 class ScheduleViewModel @Inject constructor(
     private val scheduleRepository: ScheduleRepository
 ) : ViewModel() {
-    private val _animeScheduleState = MutableStateFlow(HomeUiState())
-    val animeScheduleState: StateFlow<HomeUiState> = _animeScheduleState.asStateFlow()
+    private val _animeSchedulePagingState = MutableStateFlow(HomeUiState())
+    val animeSchedulePagingState: StateFlow<HomeUiState> = _animeSchedulePagingState.asStateFlow()
 
     fun fetchAnimeSchedulePaging() {
         viewModelScope.launch {
-            _animeScheduleState.value = HomeUiState(isLoading = true)
+            _animeSchedulePagingState.value = HomeUiState(isLoading = true)
 
             val result = scheduleRepository.getAnimeSchedulePaging(onError = {
-                _animeScheduleState.value =
+                _animeSchedulePagingState.value =
                     HomeUiState(isLoading = false, isError = true, errorMessage = it)
             }).cachedIn(viewModelScope)
 
-            _animeScheduleState.value = HomeUiState(isLoading = false, dataPaging = result)
+            _animeSchedulePagingState.value = HomeUiState(isLoading = false, dataPaging = result)
         }
     }
+
+    val animeScheduleState: StateFlow<HomeUiState> =
+        scheduleRepository.getAnimeSchedule().stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000L),
+            initialValue = HomeUiState(isLoading = true)
+        )
 
     init {
         fetchAnimeSchedulePaging()

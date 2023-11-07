@@ -45,7 +45,11 @@ class BasePagingSource(
                     if (page > totalPages!!) {
                         null
                     } else {
-                        page + (params.loadSize / totalPages!!)
+                        if (hasNextPage != null && hasNextPage!!) {
+                            page + 1
+                        } else {
+                            null
+                        }
                     }
                 } else {
                     null

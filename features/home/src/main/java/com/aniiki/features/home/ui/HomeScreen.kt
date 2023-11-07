@@ -42,7 +42,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -306,7 +306,8 @@ fun AnimeComponent(
                     imageUrl = pagingItems[itemCount]?.images?.webp?.imageUrl ?: "",
                     title = pagingItems[itemCount]?.title ?: "",
                     titleJapanese = pagingItems[itemCount]?.titleJapanese ?: "",
-                    favourite = pagingItems[itemCount]?.favourite ?: false
+                    favourite = pagingItems[itemCount]?.favourite ?: false,
+                    modifier = Modifier.padding(start = 16.dp)
                 )
             }
         }
@@ -334,7 +335,8 @@ fun AnimeComponent(
                     imageUrl = item.images?.webp?.imageUrl ?: "",
                     title = item.title ?: "",
                     titleJapanese = item.titleJapanese ?: "",
-                    favourite = item.favourite ?: false
+                    favourite = item.favourite ?: false,
+                    modifier = Modifier.padding(start = 16.dp)
                 )
             }
         }
@@ -347,16 +349,16 @@ fun AnimeContent(
     imageUrl: String,
     title: String,
     titleJapanese: String,
-    favourite: Boolean
+    favourite: Boolean,
+    modifier: Modifier = Modifier
 ) {
-    val liked = remember { mutableStateOf(favourite) }
+    val liked = rememberSaveable { mutableStateOf(favourite) }
 
     Box(
         contentAlignment = Alignment.BottomStart,
-        modifier = Modifier
+        modifier = modifier
             .width(205.dp)
             .height(255.dp)
-            .padding(start = 16.dp)
     ) {
         GlideImage(
             imageModel = { imageUrl },
