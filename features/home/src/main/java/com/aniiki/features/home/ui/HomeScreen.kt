@@ -122,7 +122,10 @@ fun HomeScreenApp(
             }
         }
         composable(route = DetailAnime.route) {
-            DetailMainScreen(detailViewModel = detailViewModel)
+            DetailMainScreen(
+                detailViewModel = detailViewModel,
+                onBackPressed = {}
+            )
         }
     }
 
