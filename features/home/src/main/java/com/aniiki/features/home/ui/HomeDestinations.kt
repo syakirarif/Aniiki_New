@@ -11,6 +11,10 @@ interface HomeDestination {
     val route: String
 }
 
+interface NavScreen {
+    val route: String
+}
+
 object Home : HomeDestination {
     override val icon = Icons.Filled.Home
     override val route = "Home"
@@ -24,6 +28,14 @@ object Schedule : HomeDestination {
 object Library : HomeDestination {
     override val icon = Icons.Filled.Menu
     override val route = "Library"
+}
+
+object Dashboard : NavScreen {
+    override val route = "dashboard"
+}
+
+object DetailAnime : NavScreen {
+    override val route = "detail"
 }
 
 val homeTabRowScreens = listOf(Home, Schedule, Library)

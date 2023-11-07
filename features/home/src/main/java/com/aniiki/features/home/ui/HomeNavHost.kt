@@ -10,20 +10,34 @@ import androidx.navigation.compose.composable
 @Composable
 fun HomeNavHost(
     navHostController: NavHostController,
+    navHostController2: NavHostController,
     homeViewModel: HomeViewModel,
     scheduleViewModel: ScheduleViewModel,
+    detailViewModel: DetailViewModel,
     modifier: Modifier = Modifier
 ) {
     NavHost(
-        navController = navHostController,
+        navController = navHostController2,
         startDestination = Home.route,
         modifier = modifier
     ) {
         composable(route = Home.route) {
-            HomeMainScreen(homeViewModel = homeViewModel)
+            HomeMainScreen(
+                homeViewModel = homeViewModel,
+                onItemClicked = { item ->
+                    detailViewModel.setAnimeResponse(item)
+                    navHostController.navigate(DetailAnime.route)
+                }
+            )
         }
         composable(route = Schedule.route) {
-            ScheduleMainScreen(scheduleViewModel = scheduleViewModel)
+            ScheduleMainScreen(
+                scheduleViewModel = scheduleViewModel,
+                onItemClicked = { item ->
+                    detailViewModel.setAnimeResponse(item)
+                    navHostController.navigate(DetailAnime.route)
+                }
+            )
         }
         composable(route = Library.route) {
             LibraryMainScreen(screenName = Library.route)

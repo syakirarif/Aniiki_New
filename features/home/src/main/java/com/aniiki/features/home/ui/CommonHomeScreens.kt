@@ -22,7 +22,8 @@ import java.io.IOException
 fun AnimeGridListPaging(
     pagingItems: LazyPagingItems<AnimeResponse>,
     onErrorClick: () -> Unit,
-    errorMessageMain: String? = ""
+    errorMessageMain: String? = "",
+    onItemClicked: (AnimeResponse?) -> Unit
 ) {
     val context = LocalContext.current
 
@@ -33,7 +34,8 @@ fun AnimeGridListPaging(
                 pagingItems = pagingItems,
                 context = context,
                 errorMessage = errorMessageMain,
-                onErrorClick = onErrorClick
+                onErrorClick = onErrorClick,
+                onItemClicked = onItemClicked
             )
         }
 
@@ -62,6 +64,7 @@ fun AnimeGridListPaging(
 fun AnimeGridList(
     homeUiState: HomeUiState,
     onErrorClick: () -> Unit,
+    onItemClicked: (AnimeResponse?) -> Unit
 ) {
     val context = LocalContext.current
 
@@ -76,7 +79,8 @@ fun AnimeGridList(
                 AnimeComponentGrid(
                     items = homeUiState.data,
                     context = context,
-                    onErrorClick = onErrorClick
+                    onErrorClick = onErrorClick,
+                    onItemClicked = onItemClicked
                 )
             } else {
                 Timber.e("HomeAnimeList | isNotLoading | Empty - ${homeUiState.data.size}")
@@ -95,7 +99,8 @@ fun AnimeComponentGrid(
     items: List<AnimeResponse>,
     context: Context,
     errorMessage: String? = "",
-    onErrorClick: () -> Unit
+    onErrorClick: () -> Unit,
+    onItemClicked: (AnimeResponse?) -> Unit
 ) {
     if (items.isEmpty())
         ErrorScreen(errorMessage = errorMessage ?: "", onErrorClick = onErrorClick)
@@ -112,10 +117,8 @@ fun AnimeComponentGrid(
 
                 AnimeContent(
                     context = context,
-                    imageUrl = item.images?.webp?.imageUrl ?: "",
-                    title = item.title ?: "",
-                    titleJapanese = item.titleJapanese ?: "",
-                    favourite = item.favourite ?: false
+                    item = item,
+                    onItemClicked = onItemClicked
                 )
             }
         }
@@ -127,7 +130,8 @@ fun AnimeComponentGridPaging(
     pagingItems: LazyPagingItems<AnimeResponse>,
     context: Context,
     errorMessage: String? = "",
-    onErrorClick: () -> Unit
+    onErrorClick: () -> Unit,
+    onItemClicked: (AnimeResponse?) -> Unit
 ) {
     if (pagingItems.itemCount == 0)
         ErrorScreen(errorMessage = errorMessage ?: "", onErrorClick = onErrorClick)
@@ -144,10 +148,8 @@ fun AnimeComponentGridPaging(
 
                 AnimeContent(
                     context = context,
-                    imageUrl = pagingItems[itemCount]?.images?.webp?.imageUrl ?: "",
-                    title = pagingItems[itemCount]?.title ?: "",
-                    titleJapanese = pagingItems[itemCount]?.titleJapanese ?: "",
-                    favourite = pagingItems[itemCount]?.favourite ?: false
+                    item = pagingItems[itemCount],
+                    onItemClicked = onItemClicked
                 )
             }
         }

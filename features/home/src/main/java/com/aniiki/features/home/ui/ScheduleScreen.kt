@@ -12,11 +12,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.syakirarif.aniiki.apiservice.response.anime.AnimeResponse
 import com.syakirarif.aniiki.compose.spacer
 import com.syakirarif.aniiki.core.utils.getCurrentDay
 
 @Composable
-fun ScheduleMainScreen(scheduleViewModel: ScheduleViewModel) {
+fun ScheduleMainScreen(
+    scheduleViewModel: ScheduleViewModel,
+    onItemClicked: (AnimeResponse?) -> Unit
+) {
 
     val today = getCurrentDay().replaceFirstChar { it.uppercase() }
 
@@ -45,7 +49,8 @@ fun ScheduleMainScreen(scheduleViewModel: ScheduleViewModel) {
 //            )
             AnimeGridList(
                 homeUiState = animeScheduleState,
-                onErrorClick = {}
+                onErrorClick = {},
+                onItemClicked = onItemClicked
             )
             8.spacer()
         }

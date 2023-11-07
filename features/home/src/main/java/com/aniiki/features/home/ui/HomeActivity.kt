@@ -17,6 +17,7 @@ class HomeActivity : ComponentActivity() {
 
     private val homeViewModel: HomeViewModel by viewModels()
     private val scheduleViewModel: ScheduleViewModel by viewModels()
+    private val detailViewModel: DetailViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,7 +38,8 @@ class HomeActivity : ComponentActivity() {
                 ) {
                     HomeScreenApp(
                         homeViewModel,
-                        scheduleViewModel
+                        scheduleViewModel,
+                        detailViewModel
                     )
                 }
             }

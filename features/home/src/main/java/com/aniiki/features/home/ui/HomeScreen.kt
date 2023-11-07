@@ -55,6 +55,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.paging.LoadState
@@ -71,39 +73,64 @@ import timber.log.Timber
 import java.io.IOException
 
 @Composable
-fun HomeScreenApp(homeViewModel: HomeViewModel, scheduleViewModel: ScheduleViewModel) {
+fun HomeScreenApp(
+    homeViewModel: HomeViewModel,
+    scheduleViewModel: ScheduleViewModel,
+    detailViewModel: DetailViewModel
+) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     val navController = rememberNavController()
     val currentBackStack by navController.currentBackStackEntryAsState()
     val currentDestination = currentBackStack?.destination
     val currentScreen =
-        homeTabRowScreens.find { it.route == currentDestination?.route } ?: Home
+        homeTabRowScreens.find { it.route == currentDestination?.route } ?: Dashboard
 
-    Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = { HomeTopAppBar(scrollBehavior = scrollBehavior) },
-        bottomBar = {
-            HomeBottomNavigation(
-                allScreens = homeTabRowScreens,
-                onTabSelected = { newScreen ->
-                    navController.navigateSingleTopTo(newScreen.route)
-                },
-                currentScreen = currentScreen
-            )
+    val navController2 = rememberNavController()
+    val currentBackStack2 by navController2.currentBackStackEntryAsState()
+    val currentDestination2 = currentBackStack2?.destination
+    val currentScreen2 =
+        homeTabRowScreens.find { it.route == currentDestination2?.route } ?: Home
+
+    NavHost(
+        navController = navController,
+        startDestination = Dashboard.route,
+        modifier = Modifier
+    ) {
+        composable(route = Dashboard.route) {
+            Scaffold(
+                modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+                topBar = { HomeTopAppBar(scrollBehavior = scrollBehavior) },
+                bottomBar = {
+                    HomeBottomNavigation(
+                        allScreens = homeTabRowScreens,
+                        onTabSelected = { newScreen ->
+                            navController2.navigateSingleTopTo(newScreen.route)
+                        },
+                        currentScreen = currentScreen2
+                    )
+                }
+            ) { innerPadding ->
+                HomeNavHost(
+                    navHostController = navController,
+                    navHostController2 = navController2,
+                    homeViewModel = homeViewModel,
+                    scheduleViewModel = scheduleViewModel,
+                    detailViewModel = detailViewModel,
+                    modifier = Modifier.padding(innerPadding)
+                )
+            }
         }
-    ) { innerPadding ->
-        HomeNavHost(
-            navHostController = navController,
-            homeViewModel = homeViewModel,
-            scheduleViewModel = scheduleViewModel,
-            modifier = Modifier.padding(innerPadding)
-        )
+        composable(route = DetailAnime.route) {
+            DetailMainScreen(detailViewModel = detailViewModel)
+        }
     }
+
+
 }
 
 @Composable
-fun HomeMainScreen(homeViewModel: HomeViewModel) {
+fun HomeMainScreen(homeViewModel: HomeViewModel, onItemClicked: (AnimeResponse?) -> Unit) {
 
     val animeTopAiring by homeViewModel.animeTopAiring.collectAsState()
     val animeTopUpcomingState by homeViewModel.animeTopUpcomingState.collectAsState()
@@ -125,19 +152,22 @@ fun HomeMainScreen(homeViewModel: HomeViewModel) {
                 HomeAnimeList(
                     pagingItems = animeSeasonPagingItems,
                     onErrorClick = { homeViewModel.fetchAnimePaging() },
-                    errorMessageMain = animeSeasonState.errorMessage
+                    errorMessageMain = animeSeasonState.errorMessage,
+                    onItemClicked = onItemClicked
                 )
                 8.spacer()
                 HomeAnimeHeading(title = "Top 10 Airing Anime")
                 HomeAnimeList(
                     homeUiState = animeTopAiring,
                     onErrorClick = { },
+                    onItemClicked = onItemClicked
                 )
                 8.spacer()
                 HomeAnimeHeading(title = "Top 10 Upcoming Anime")
                 HomeAnimeList(
                     homeUiState = animeTopUpcomingState,
                     onErrorClick = { },
+                    onItemClicked = onItemClicked
                 )
                 8.spacer()
             }
@@ -186,6 +216,7 @@ fun HomeAnimeHeading(title: String) {
 fun HomeAnimeList(
     homeUiState: HomeUiState,
     onErrorClick: () -> Unit,
+    onItemClicked: (AnimeResponse?) -> Unit
 ) {
     val context = LocalContext.current
 
@@ -200,7 +231,8 @@ fun HomeAnimeList(
                 AnimeComponent(
                     items = homeUiState.data,
                     context = context,
-                    onErrorClick = onErrorClick
+                    onErrorClick = onErrorClick,
+                    onItemClicked = onItemClicked
                 )
             } else {
                 Timber.e("HomeAnimeList | isNotLoading | Empty - ${homeUiState.data.size}")
@@ -218,7 +250,8 @@ fun HomeAnimeList(
 fun HomeAnimeList(
     pagingItems: LazyPagingItems<AnimeResponse>,
     onErrorClick: () -> Unit,
-    errorMessageMain: String? = ""
+    errorMessageMain: String? = "",
+    onItemClicked: (AnimeResponse?) -> Unit
 ) {
     val context = LocalContext.current
 
@@ -229,7 +262,8 @@ fun HomeAnimeList(
                 pagingItems = pagingItems,
                 context = context,
                 errorMessage = errorMessageMain,
-                onErrorClick = onErrorClick
+                onErrorClick = onErrorClick,
+                onItemClicked = onItemClicked
             )
         }
 
@@ -290,7 +324,8 @@ fun AnimeComponent(
     pagingItems: LazyPagingItems<AnimeResponse>,
     context: Context,
     errorMessage: String? = "",
-    onErrorClick: () -> Unit
+    onErrorClick: () -> Unit,
+    onItemClicked: (AnimeResponse?) -> Unit
 ) {
     if (pagingItems.itemCount == 0)
         ErrorScreen(errorMessage = errorMessage ?: "", onErrorClick = onErrorClick)
@@ -303,10 +338,8 @@ fun AnimeComponent(
 
                 AnimeContent(
                     context = context,
-                    imageUrl = pagingItems[itemCount]?.images?.webp?.imageUrl ?: "",
-                    title = pagingItems[itemCount]?.title ?: "",
-                    titleJapanese = pagingItems[itemCount]?.titleJapanese ?: "",
-                    favourite = pagingItems[itemCount]?.favourite ?: false,
+                    item = pagingItems[itemCount],
+                    onItemClicked = onItemClicked,
                     modifier = Modifier.padding(start = 16.dp)
                 )
             }
@@ -319,7 +352,8 @@ fun AnimeComponent(
     items: List<AnimeResponse>,
     context: Context,
     errorMessage: String? = "",
-    onErrorClick: () -> Unit
+    onErrorClick: () -> Unit,
+    onItemClicked: (AnimeResponse?) -> Unit
 ) {
     if (items.isEmpty())
         ErrorScreen(errorMessage = errorMessage ?: "", onErrorClick = onErrorClick)
@@ -332,10 +366,8 @@ fun AnimeComponent(
 
                 AnimeContent(
                     context = context,
-                    imageUrl = item.images?.webp?.imageUrl ?: "",
-                    title = item.title ?: "",
-                    titleJapanese = item.titleJapanese ?: "",
-                    favourite = item.favourite ?: false,
+                    item = item,
+                    onItemClicked = onItemClicked,
                     modifier = Modifier.padding(start = 16.dp)
                 )
             }
@@ -346,12 +378,14 @@ fun AnimeComponent(
 @Composable
 fun AnimeContent(
     context: Context,
-    imageUrl: String,
-    title: String,
-    titleJapanese: String,
-    favourite: Boolean,
+    item: AnimeResponse?,
+    onItemClicked: (AnimeResponse?) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val imageUrl: String = item?.images?.webp?.imageUrl ?: ""
+    val title: String = item?.title ?: ""
+    val titleJapanese: String = item?.titleJapanese ?: ""
+    val favourite: Boolean = item?.favourite ?: false
     val liked = rememberSaveable { mutableStateOf(favourite) }
 
     Box(
@@ -372,13 +406,14 @@ fun AnimeContent(
 //                            .height(200.dp)
                 .clip(RoundedCornerShape(8.dp))
                 .clickable {
-                    Toast
-                        .makeText(
-                            context,
-                            title,
-                            Toast.LENGTH_SHORT
-                        )
-                        .show()
+                    onItemClicked(item)
+//                    Toast
+//                        .makeText(
+//                            context,
+//                            title,
+//                            Toast.LENGTH_SHORT
+//                        )
+//                        .show()
                 }
         )
         Row(
