@@ -44,11 +44,12 @@ class HomeRepository constructor(
             )
         }.suspendOnError {
             val jsonObject = JSONObject(this.toString())
+            val errorMessage = jsonObject.getString("message")
             emit(
                 HomeUiState(
                     isLoading = false,
                     isError = true,
-                    errorMessage = jsonObject.getString("error")
+                    errorMessage = errorMessage
                 )
             )
         }
@@ -68,11 +69,12 @@ class HomeRepository constructor(
             )
         }.suspendOnError {
             val jsonObject = JSONObject(this.toString())
+            val errorMessage = jsonObject.getString("message")
             emit(
                 HomeUiState(
                     isLoading = false,
                     isError = true,
-                    errorMessage = jsonObject.getString("error")
+                    errorMessage = errorMessage
                 )
             )
         }
@@ -92,11 +94,12 @@ class HomeRepository constructor(
             )
         }.suspendOnError {
             val jsonObject = JSONObject(this.toString())
+            val errorMessage = jsonObject.getString("message")
             emit(
                 HomeUiState(
                     isLoading = false,
                     isError = true,
-                    errorMessage = jsonObject.getString("error")
+                    errorMessage = errorMessage
                 )
             )
         }

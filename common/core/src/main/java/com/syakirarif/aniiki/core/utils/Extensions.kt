@@ -136,3 +136,23 @@ fun getCurrentAnimeSeason(): String {
     }
     return season
 }
+
+fun String?.orNullEmpty(): String {
+    return if (this != null && this != "null" && this != "")
+        if (this.toString() == "null")
+            "-"
+        else
+            this
+    else
+        "-"
+}
+
+fun Any?.orNullEmpty(): String {
+    return if (this != null && this != "null" && this != "")
+        if (this.toString() == "null")
+            "-"
+        else
+            this.toString()
+    else
+        "-"
+}

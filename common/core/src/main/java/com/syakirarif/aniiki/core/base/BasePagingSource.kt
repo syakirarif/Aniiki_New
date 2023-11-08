@@ -35,7 +35,8 @@ class BasePagingSource(
                 hasNextPage = pagination?.hasNextPage
             }.onError {
                 val jsonObject = JSONObject(this.toString())
-                onError(jsonObject.getString("error"))
+                val errorMessage = jsonObject.getString("message")
+                onError(errorMessage)
             }
 
             val nextKey = if (animes.isEmpty()) {

@@ -3,13 +3,16 @@
 package com.aniiki.features.home.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
@@ -26,38 +29,62 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.glide.GlideImage
+import com.syakirarif.aniiki.apiservice.response.anime.AnimeResponse
 import com.syakirarif.aniiki.compose.radius
 import com.syakirarif.aniiki.compose.spacer
+import com.syakirarif.aniiki.core.utils.orNullEmpty
 
 @Composable
 fun DetailMainScreen(detailViewModel: DetailViewModel, onBackPressed: () -> Unit) {
 
     val anime by detailViewModel.animeResponse.collectAsState()
 
+    val posterSize = 600
+
     val context = LocalContext.current
     Box(
         contentAlignment = Alignment.TopCenter,
-        modifier = Modifier.background(color = Color.White)
+        modifier = Modifier.background(color = Color.Black)
     ) {
-        GlideImage(
-            imageModel = { anime.images?.webp?.largeImageUrl },
-            imageOptions = ImageOptions(
-                contentScale = ContentScale.Crop
-            ),
-            loading = { LoadingScreen() },
-            modifier = Modifier
-//                .fillMaxSize()
-                .height(520.dp)
-//                .fillMaxHeight()
-                .fillMaxWidth()
-                .align(Alignment.TopCenter),
-        )
+        Box(
+            Modifier.align(Alignment.TopCenter)
+        ) {
+            GlideImage(
+                imageModel = { anime.images?.webp?.largeImageUrl },
+                imageOptions = ImageOptions(
+                    contentScale = ContentScale.Crop
+                ),
+                loading = { LoadingScreen() },
+                modifier = Modifier
+                    //                .fillMaxSize()
+                    .height(posterSize.dp)
+                    //                .fillMaxHeight()
+                    .fillMaxWidth()
+                    .align(Alignment.TopCenter),
+            )
+            Box(
+                modifier = Modifier
+                    .height(70.dp)
+                    .fillMaxWidth()
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                Color.Black.copy(alpha = 0.4f),
+                                Color.Black
+                            )
+                        )
+                    )
+                    .align(Alignment.BottomCenter),
+            )
+        }
 
         Column(
         ) {
@@ -90,7 +117,12 @@ fun DetailMainScreen(detailViewModel: DetailViewModel, onBackPressed: () -> Unit
 //                contentColor = MaterialTheme.colorScheme.background,
 //                elevation = 0.dp
             )
-            Box(contentAlignment = Alignment.BottomCenter) {
+            Box(
+                contentAlignment = Alignment.BottomCenter,
+                modifier = Modifier.background(
+                    color = Color.Transparent
+                )
+            ) {
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
@@ -98,46 +130,45 @@ fun DetailMainScreen(detailViewModel: DetailViewModel, onBackPressed: () -> Unit
 //                        .padding(paddingValues)
                 ) {
                     item {
-                        300.spacer()
-                        Text(
-                            text = "${anime.title}",
-                            style = MaterialTheme.typography.headlineLarge,
-                            color = Color.White,
+                        500.spacer()
+                        Column(
                             modifier = Modifier
-                                .padding(start = 16.dp)
-                                .background(
-                                    color = Color.Transparent.copy(
-                                        alpha = 0.3f
-                                    )
-                                ),
-                        )
-                        10.spacer()
-                        Text(
-                            "${anime.synopsis}",
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = Color.White,
-                            modifier = Modifier
-                                .padding(horizontal = 16.dp)
-                                .background(
-                                    color = Color.Transparent.copy(
-                                        alpha = 0.3f
-                                    )
-                                ),
-                        )
-                        20.spacer()
-                        Text(
-                            text = "Subject Details",
-                            style = MaterialTheme.typography.headlineSmall,
-                            color = Color.White,
-                            modifier = Modifier
-                                .padding(start = 16.dp)
-                                .background(
-                                    color = Color.Transparent.copy(
-                                        alpha = 0.3f
-                                    )
-                                )
-                        )
-                        120.spacer()
+                                .fillMaxSize()
+                                .clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp))
+                                .background(Color.White)
+                        ) {
+                            20.spacer()
+                            Text(
+                                text = "${anime.title}",
+                                style = MaterialTheme.typography.headlineLarge,
+                                color = Color.Black,
+                                modifier = Modifier
+                                    .padding(start = 16.dp),
+                            )
+                            10.spacer()
+                            Text(
+                                "${anime.synopsis}",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = Color.Black,
+                                modifier = Modifier
+                                    .padding(horizontal = 16.dp),
+                            )
+                            20.spacer()
+                            Text(
+                                text = "Subject Details",
+                                style = MaterialTheme.typography.headlineSmall,
+                                color = Color.Black,
+                                modifier = Modifier
+                                    .padding(start = 16.dp)
+                            )
+                            20.spacer()
+                            TableDetails(
+                                anime = anime,
+                                modifier = Modifier.padding(horizontal = 16.dp)
+                            )
+                            120.spacer()
+                        }
+
                     }
 //                itemsIndexed(
 //                    eduSubjectDetailsData
@@ -156,6 +187,7 @@ fun DetailMainScreen(detailViewModel: DetailViewModel, onBackPressed: () -> Unit
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(80.dp)
+                        .background(Color.White)
                         .padding(
                             start = 32.dp,
                             end = 32.dp,
@@ -176,5 +208,33 @@ fun DetailMainScreen(detailViewModel: DetailViewModel, onBackPressed: () -> Unit
                 }
             }
         }
+    }
+}
+
+@Composable
+fun TableDetails(anime: AnimeResponse?, modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier
+    ) {
+        ItemDetail("Type", anime?.type.orNullEmpty())
+        ItemDetail("Source", anime?.source.orNullEmpty())
+        ItemDetail("Episodes", anime?.episodes.orNullEmpty())
+        ItemDetail("Status", anime?.status.orNullEmpty())
+        ItemDetail("Duration", anime?.duration.orNullEmpty())
+        ItemDetail("Rating", anime?.rating.orNullEmpty())
+        ItemDetail("Score", anime?.score.orNullEmpty())
+
+    }
+}
+
+@Composable
+fun ItemDetail(title: String, value: String) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Start,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(text = title, modifier = Modifier.weight(1f))
+        Text(text = value, modifier = Modifier.weight(1f))
     }
 }

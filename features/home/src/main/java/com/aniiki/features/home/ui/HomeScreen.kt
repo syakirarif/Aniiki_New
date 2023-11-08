@@ -124,7 +124,7 @@ fun HomeScreenApp(
         composable(route = DetailAnime.route) {
             DetailMainScreen(
                 detailViewModel = detailViewModel,
-                onBackPressed = {}
+                onBackPressed = { navController.popBackStack() }
             )
         }
     }

@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName
 import com.syakirarif.aniiki.apiservice.response.anime.childs.*
 
 @Keep
-data class AnimeResponse(
+data class AnimeFullResponse(
     @SerializedName("mal_id")
     var malId: Int = 0,
     @SerializedName("url")
@@ -22,11 +22,11 @@ data class AnimeResponse(
     @SerializedName("title")
     var title: String = "",
     @SerializedName("title_english")
-    var titleEnglish: String = "",
+    var titleEnglish: Any = Any(),
     @SerializedName("title_japanese")
     var titleJapanese: String = "",
     @SerializedName("title_synonyms")
-    var titleSynonyms: List<String> = listOf(),
+    var titleSynonyms: List<Any> = listOf(),
     @SerializedName("type")
     var type: String = "",
     @SerializedName("source")
@@ -44,11 +44,11 @@ data class AnimeResponse(
     @SerializedName("rating")
     var rating: String = "",
     @SerializedName("score")
-    var score: Any = Any(),
+    var score: Double = 0.0,
     @SerializedName("scored_by")
-    var scoredBy: Any = Any(),
+    var scoredBy: Int = 0,
     @SerializedName("rank")
-    var rank: Any = Any(),
+    var rank: Int = 0,
     @SerializedName("popularity")
     var popularity: Int = 0,
     @SerializedName("members")
@@ -79,5 +79,12 @@ data class AnimeResponse(
     var themes: List<Theme> = listOf(),
     @SerializedName("demographics")
     var demographics: List<Demographic> = listOf(),
-    var favourite: Boolean = false
+    @SerializedName("relations")
+    var relations: List<Relation> = listOf(),
+    @SerializedName("theme")
+    var theme: ThemeX = ThemeX(),
+    @SerializedName("external")
+    var `external`: List<External> = listOf(),
+    @SerializedName("streaming")
+    var streaming: List<Streaming> = listOf()
 )
