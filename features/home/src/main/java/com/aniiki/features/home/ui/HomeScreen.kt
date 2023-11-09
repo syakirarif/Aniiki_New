@@ -76,7 +76,8 @@ import java.io.IOException
 fun HomeScreenApp(
     homeViewModel: HomeViewModel,
     scheduleViewModel: ScheduleViewModel,
-    detailViewModel: DetailViewModel
+    detailViewModel: DetailViewModel,
+    modifier: Modifier = Modifier
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
@@ -95,11 +96,12 @@ fun HomeScreenApp(
     NavHost(
         navController = navController,
         startDestination = Dashboard.route,
-        modifier = Modifier
+        modifier = modifier
     ) {
         composable(route = Dashboard.route) {
             Scaffold(
-                modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+                modifier = modifier
+                    .nestedScroll(scrollBehavior.nestedScrollConnection),
                 topBar = { HomeTopAppBar(scrollBehavior = scrollBehavior) },
                 bottomBar = {
                     HomeBottomNavigation(

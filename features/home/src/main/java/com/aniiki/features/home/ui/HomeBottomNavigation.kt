@@ -20,7 +20,7 @@ fun HomeBottomNavigation(
     currentScreen: HomeDestination
 ) {
     NavigationBar(
-        containerColor = MaterialTheme.colorScheme.surface
+//        containerColor = MaterialTheme.colorScheme.surface
     ) {
         allScreens.forEach { screen ->
             NavigationBarItem(

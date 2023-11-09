@@ -1,6 +1,7 @@
 package com.aniiki.features.home.ui
 
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -21,7 +22,23 @@ class HomeActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         WindowCompat.setDecorFitsSystemWindows(window, false)
+
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+//            window.setDecorFitsSystemWindows(false); //also tried with true
+//        } else {
+//            window.setFlags(
+//                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+//                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+//            )
+//        }
+
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+        )
+
         setContent {
 //            MovieScreen(
 //                viewModel = viewModel,
@@ -31,15 +48,18 @@ class HomeActivity : ComponentActivity() {
 //                lazyGridState = LazyGridState()
 //            )
 
+
             BidayahTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
                     HomeScreenApp(
-                        homeViewModel,
-                        scheduleViewModel,
-                        detailViewModel
+                        homeViewModel = homeViewModel,
+                        scheduleViewModel = scheduleViewModel,
+                        detailViewModel = detailViewModel,
+//                        modifier = Modifier
+//                            .navigationBarsPadding()
                     )
                 }
             }

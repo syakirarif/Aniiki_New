@@ -1,11 +1,15 @@
 package com.aniiki.features.home.ui
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @Composable
 fun HomeNavHost(
@@ -16,6 +20,33 @@ fun HomeNavHost(
     detailViewModel: DetailViewModel,
     modifier: Modifier = Modifier
 ) {
+
+    val systemUiController = rememberSystemUiController()
+    val useDarkIcons = !isSystemInDarkTheme()
+//    val color = MaterialTheme.colorScheme.surface
+//    val color = NavigationBarDefaults.containerColor
+//    val color = MaterialTheme.colorScheme.contentColorFor(containerColor)
+
+    DisposableEffect(key1 = systemUiController, key2 = useDarkIcons) {
+
+//        systemUiController.setSystemBarsColor(
+//            color = Color.Transparent,
+//            darkIcons = useDarkIcons
+//        )
+
+        systemUiController.setStatusBarColor(
+            color = Color.Transparent,
+            darkIcons = useDarkIcons
+        )
+
+        systemUiController.setNavigationBarColor(
+            color = Color.Transparent,
+            darkIcons = useDarkIcons,
+        )
+
+        onDispose { }
+    }
+
     NavHost(
         navController = navHostController2,
         startDestination = Home.route,

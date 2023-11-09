@@ -21,10 +21,13 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -35,6 +38,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.glide.GlideImage
 import com.syakirarif.aniiki.apiservice.response.anime.AnimeResponse
@@ -42,8 +46,73 @@ import com.syakirarif.aniiki.compose.radius
 import com.syakirarif.aniiki.compose.spacer
 import com.syakirarif.aniiki.core.utils.orNullEmpty
 
+
 @Composable
 fun DetailMainScreen(detailViewModel: DetailViewModel, onBackPressed: () -> Unit) {
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
+    ) {
+        Scaffold(
+            modifier = Modifier.fillMaxSize(),
+            topBar = {},
+            bottomBar = {}
+//        color = MaterialTheme.colorScheme.background
+        ) { innerPadding ->
+            DetailMainScreen2(
+                detailViewModel = detailViewModel,
+                onBackPressed = onBackPressed,
+                modifier = Modifier.padding(
+//                    start = innerPadding.calculateStartPadding(LayoutDirection.Ltr),
+//                    end = innerPadding.calculateEndPadding(LayoutDirection.Ltr),
+                    bottom = innerPadding.calculateBottomPadding()
+                )
+            )
+        }
+    }
+}
+
+@Composable
+fun DetailMainScreen2(
+    detailViewModel: DetailViewModel,
+    onBackPressed: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+
+//    val systemUiController = rememberSystemUiController()
+////    val useDarkIcons = !isSystemInDarkTheme()
+////
+//    DisposableEffect(systemUiController, useDarkIcons) {
+//        systemUiController.setSystemBarsColor(
+//            color = Color.Transparent,
+//            darkIcons = useDarkIcons
+//        )
+//
+//        onDispose {}
+//    }
+
+    val systemUiController = rememberSystemUiController()
+
+    DisposableEffect(key1 = systemUiController) {
+
+//        systemUiController.setSystemBarsColor(
+//            color = Color.Transparent,
+//            darkIcons = false
+//        )
+
+        systemUiController.setStatusBarColor(
+            color = Color.Transparent,
+            darkIcons = false
+        )
+
+        systemUiController.setNavigationBarColor(
+            color = Color.Transparent,
+            darkIcons = true
+        )
+
+        onDispose { }
+    }
+
 
     val anime by detailViewModel.animeResponse.collectAsState()
 
@@ -52,7 +121,9 @@ fun DetailMainScreen(detailViewModel: DetailViewModel, onBackPressed: () -> Unit
     val context = LocalContext.current
     Box(
         contentAlignment = Alignment.TopCenter,
-        modifier = Modifier.background(color = Color.Black)
+        modifier = modifier
+            .fillMaxSize()
+            .background(color = Color.Black)
     ) {
         Box(
             Modifier.align(Alignment.TopCenter)
@@ -96,7 +167,7 @@ fun DetailMainScreen(detailViewModel: DetailViewModel, onBackPressed: () -> Unit
                 ),
                 title = {
                     Text(
-                        "${anime.title}",
+                        anime.title.orNullEmpty(),
                         style = MaterialTheme.typography.titleLarge,
                         color = Color.White
                     )
@@ -139,7 +210,7 @@ fun DetailMainScreen(detailViewModel: DetailViewModel, onBackPressed: () -> Unit
                         ) {
                             20.spacer()
                             Text(
-                                text = "${anime.title}",
+                                text = anime.title.orNullEmpty(),
                                 style = MaterialTheme.typography.headlineLarge,
                                 color = Color.Black,
                                 modifier = Modifier
@@ -147,7 +218,7 @@ fun DetailMainScreen(detailViewModel: DetailViewModel, onBackPressed: () -> Unit
                             )
                             10.spacer()
                             Text(
-                                "${anime.synopsis}",
+                                text = anime.synopsis.orNullEmpty(),
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = Color.Black,
                                 modifier = Modifier
