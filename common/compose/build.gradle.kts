@@ -30,6 +30,7 @@ dependencies {
     api(COIL.compose)
     api(AndroidX.palette)
     api(AndroidX.navigation.compose)
+    api("com.google.accompanist:accompanist-systemuicontroller:0.32.0")
 
     
     // Landscapist
