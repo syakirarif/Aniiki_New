@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalCoroutinesApi::class)
+
 package com.aniiki.features.login.di
 
 import com.aniiki.features.login.repository.LoginRepository
@@ -7,6 +9,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @Module(includes = [ApiServiceModule::class])
 @InstallIn(SingletonComponent::class)
