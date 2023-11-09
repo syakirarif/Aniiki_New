@@ -1,3 +1,5 @@
+//@file:Suppress("DEPRECATION")
+
 package com.syakirarif.aniiki.apiservice.utils
 
 import android.content.Context
@@ -29,66 +31,45 @@ class NoConnectionInterceptor @Inject constructor(private val context: Context) 
         val connectivityManager =
             context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-            val network = connectivityManager.activeNetwork
-            val connection = connectivityManager.getNetworkCapabilities(network)
-            return connection != null && (
-                    connection.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
-                            connection.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR))
-        } else {
-            val activeNetwork = connectivityManager.activeNetworkInfo
-            if (activeNetwork != null) {
-                return (activeNetwork.type == ConnectivityManager.TYPE_WIFI ||
-                        activeNetwork.type == ConnectivityManager.TYPE_MOBILE)
-            }
-            return false
-        }
+        val network = connectivityManager.activeNetwork
+        val connection = connectivityManager.getNetworkCapabilities(network)
+        return connection != null && (
+                connection.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                        connection.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR))
     }
 
     private fun isOnline(): Boolean {
         val manager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        return if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M)
-            manager.getNetworkCapabilities(manager.activeNetwork)?.let {
-                it.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
-                        it.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) ||
-                        it.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) ||
-                        it.hasTransport(NetworkCapabilities.TRANSPORT_VPN)
-            } ?: false
-        else
-            @Suppress("DEPRECATION")
-            manager.activeNetworkInfo?.isConnectedOrConnecting == true
+        return manager.getNetworkCapabilities(manager.activeNetwork)?.let {
+            it.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                    it.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) ||
+                    it.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) ||
+                    it.hasTransport(NetworkCapabilities.TRANSPORT_VPN)
+        } ?: false
     }
 
     private fun isOnline2(): Boolean {
-        if (context == null) return false
         val connectivityManager =
             context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-            val capabilities =
-                connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
-            if (capabilities != null) {
-                when {
-                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> {
-                        return true
-                    }
-
-                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> {
-                        return true
-                    }
-
-                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> {
-                        return true
-                    }
-
-                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN) -> {
-                        return true
-                    }
+        val capabilities =
+            connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
+        if (capabilities != null) {
+            when {
+                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> {
+                    return true
                 }
-            }
-        } else {
-            val activeNetworkInfo = connectivityManager.activeNetworkInfo
-            if (activeNetworkInfo != null && activeNetworkInfo.isConnected) {
-                return true
+
+                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> {
+                    return true
+                }
+
+                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> {
+                    return true
+                }
+
+                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN) -> {
+                    return true
+                }
             }
         }
         return false
