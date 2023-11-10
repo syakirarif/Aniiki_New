@@ -36,7 +36,7 @@ fun HomeNavHost(
 
         systemUiController.setStatusBarColor(
             color = Color.Transparent,
-            darkIcons = useDarkIcons
+            darkIcons = false
         )
 
         systemUiController.setNavigationBarColor(

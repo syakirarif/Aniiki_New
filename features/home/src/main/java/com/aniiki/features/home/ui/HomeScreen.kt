@@ -5,23 +5,33 @@ package com.aniiki.features.home.ui
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -39,15 +49,21 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.input.pointer.consumeAllChanges
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -65,9 +81,15 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.glide.GlideImage
 import com.syakirarif.aniiki.apiservice.response.anime.AnimeResponse
+import com.syakirarif.aniiki.compose.ParallaxAlignment
+import com.syakirarif.aniiki.compose.fadingEdge
 import com.syakirarif.aniiki.compose.spacer
 import com.syakirarif.aniiki.core.utils.getCurrentAnimeSeason
 import com.syakirarif.aniiki.core.utils.getCurrentYear
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import timber.log.Timber
 import java.io.IOException
@@ -93,6 +115,8 @@ fun HomeScreenApp(
     val currentScreen2 =
         homeTabRowScreens.find { it.route == currentDestination2?.route } ?: Home
 
+    val animeTopAiring by homeViewModel.animeTopAiring.collectAsState()
+
     NavHost(
         navController = navController,
         startDestination = Dashboard.route,
@@ -102,7 +126,13 @@ fun HomeScreenApp(
             Scaffold(
                 modifier = modifier
                     .nestedScroll(scrollBehavior.nestedScrollConnection),
-                topBar = { HomeTopAppBar(scrollBehavior = scrollBehavior) },
+                topBar = {
+
+                    if (animeTopAiring.isLoading) {
+                        HomeTopAppBar(scrollBehavior = scrollBehavior)
+                    }
+
+                },
                 bottomBar = {
                     HomeBottomNavigation(
                         allScreens = homeTabRowScreens,
@@ -119,7 +149,7 @@ fun HomeScreenApp(
                     homeViewModel = homeViewModel,
                     scheduleViewModel = scheduleViewModel,
                     detailViewModel = detailViewModel,
-                    modifier = Modifier.padding(innerPadding)
+                    modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding())
                 )
             }
         }
@@ -130,8 +160,6 @@ fun HomeScreenApp(
             )
         }
     }
-
-
 }
 
 @Composable
@@ -145,6 +173,16 @@ fun HomeMainScreen(homeViewModel: HomeViewModel, onItemClicked: (AnimeResponse?)
     val season =
         "${getCurrentAnimeSeason().replaceFirstChar { it.uppercase() }} ${getCurrentYear()}"
 
+    val banner: MutableList<AnimeResponse> = mutableListOf()
+
+    if (!animeTopAiring.isLoading) {
+        if (animeTopAiring.data.isNotEmpty()) {
+            animeTopAiring.data.forEach {
+                banner.add(it)
+            }
+        }
+    }
+
     Surface(
         modifier = Modifier
             .fillMaxSize()
@@ -153,6 +191,9 @@ fun HomeMainScreen(homeViewModel: HomeViewModel, onItemClicked: (AnimeResponse?)
             modifier = Modifier.fillMaxSize()
         ) {
             item {
+                if (!animeTopAiring.isLoading) {
+                    HomeAnimePosterSlider(data = banner)
+                }
                 HomeAnimeHeading(title = "$season Anime")
                 HomeAnimeList(
                     pagingItems = animeSeasonPagingItems,
@@ -179,6 +220,147 @@ fun HomeMainScreen(homeViewModel: HomeViewModel, onItemClicked: (AnimeResponse?)
         }
     }
 
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun HomeAnimePosterSlider(modifier: Modifier = Modifier, data: List<AnimeResponse>) {
+
+    val pageState = rememberPagerState { data.size }
+    val heightSize = WindowInsets.systemBars.asPaddingValues()
+    var finishSwipe by remember { mutableStateOf(false) }
+
+    val coroutineScope = CoroutineScope(Dispatchers.Main)
+
+    LaunchedEffect(key1 = finishSwipe) {
+        launch {
+            delay(4000)
+            with(pageState) {
+                val target = if (currentPage < pageCount - 1) currentPage + 1 else 0
+                var newPosition = pageState.currentPage + 1
+                if (newPosition > data.lastIndex) newPosition = 0
+
+                animateScrollToPage(
+                    page = target,
+                    animationSpec = tween(
+                        durationMillis = 500,
+                        easing = FastOutSlowInEasing
+                    )
+                )
+
+                finishSwipe = !finishSwipe
+            }
+        }
+    }
+
+    val topFade = Brush.verticalGradient(0f to Color.Transparent, 0.3f to Color.Red)
+    val topBottomFade = Brush.verticalGradient(
+        0f to Color.Transparent,
+        0.3f to Color.Red,
+        0.7f to Color.Red,
+        1f to Color.Transparent
+    )
+
+    HorizontalPager(
+        state = pageState,
+        modifier = modifier
+            .fillMaxSize()
+            .pointerInput(Unit) {
+                detectHorizontalDragGestures { change, dragAmount ->
+                    change.consumeAllChanges()
+                    when {
+                        dragAmount < 0 -> {
+                            coroutineScope.launch { /* right */
+                                if (pageState.currentPage == data.lastIndex) {
+                                    pageState.animateScrollToPage(0)
+                                } else {
+                                    pageState.animateScrollToPage(pageState.currentPage + 1)
+                                }
+                            }
+                        }
+
+                        dragAmount > 0 -> { /* left */
+                            coroutineScope.launch {
+                                if (pageState.currentPage == 0) {
+                                    pageState.animateScrollToPage(data.lastIndex)
+                                } else {
+                                    pageState.animateScrollToPage(pageState.currentPage - 1)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+    )
+    { page ->
+        Box(modifier = Modifier.fillMaxSize()) {
+            GlideImage(
+                imageModel = { data[page].images.webp.largeImageUrl },
+                imageOptions = ImageOptions(
+                    contentScale = ContentScale.Crop,
+                    alignment = remember(pageState) {
+                        ParallaxAlignment(
+                            horizontalBias = {
+                                val adjustedOffset =
+                                    pageState.currentPageOffsetFraction - pageState.initialPageOffsetFraction
+                                (adjustedOffset / pageState.pageCount.toFloat()).coerceIn(-1f, 1f)
+                            }
+                        )
+                    }
+                ),
+                loading = { LoadingScreen() },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(480.dp)
+                    .clickable {
+
+                    }
+            )
+//            Box(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .height(heightSize.calculateTopPadding())
+//                    .background(Color.White.copy(alpha = 0.5f))
+//                    .align(Alignment.TopCenter)
+//            )
+            Column(
+                Modifier
+                    .align(Alignment.BottomCenter)
+                    .fadingEdge(topFade)
+                    .background(
+//                        Color.White.copy(
+//                            alpha = 0.9f
+//                        )
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                Color.White.copy(alpha = 0.4f),
+                                Color.White
+                            )
+                        )
+                    )
+                    .fillMaxSize()
+                    .padding(start = 16.dp, end = 16.dp, top = 32.dp, bottom = 8.dp)
+                    .size(80.dp)
+            ) {
+                Text(
+                    text = data[page].title,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    style = MaterialTheme.typography.headlineMedium.copy(
+                        fontWeight = FontWeight.Bold
+                    ),
+                    color = Color.Black
+                )
+                4.spacer()
+                Text(
+                    text = "Score: ${data[page].score}",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = Color.DarkGray
+                )
+                8.spacer()
+            }
+        }
+    }
 }
 
 @Composable
