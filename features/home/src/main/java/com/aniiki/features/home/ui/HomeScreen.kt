@@ -4,9 +4,13 @@ package com.aniiki.features.home.ui
 
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -232,23 +236,37 @@ fun HomeAnimePosterSlider(modifier: Modifier = Modifier, data: List<AnimeRespons
 
     val coroutineScope = CoroutineScope(Dispatchers.Main)
 
+//    var visibility by remember { mutableStateOf(false) }
+
+    val visibility = remember {
+        MutableTransitionState(false).apply {
+            // Start the animation immediately.
+            targetState = true
+        }
+    }
+
     LaunchedEffect(key1 = finishSwipe) {
         launch {
             delay(4000)
             with(pageState) {
-                val target = if (currentPage < pageCount - 1) currentPage + 1 else 0
+//                val target = if (currentPage < pageCount - 1) currentPage + 1 else 0
                 var newPosition = pageState.currentPage + 1
                 if (newPosition > data.lastIndex) newPosition = 0
 
+//                visibility = false
+                visibility.targetState = false
+
                 animateScrollToPage(
-                    page = target,
+                    page = newPosition,
                     animationSpec = tween(
-                        durationMillis = 500,
+                        durationMillis = 1000,
                         easing = FastOutSlowInEasing
                     )
                 )
 
                 finishSwipe = !finishSwipe
+//                visibility = true
+                visibility.targetState = true
             }
         }
     }
@@ -342,21 +360,49 @@ fun HomeAnimePosterSlider(modifier: Modifier = Modifier, data: List<AnimeRespons
                     .padding(start = 16.dp, end = 16.dp, top = 32.dp, bottom = 8.dp)
                     .size(80.dp)
             ) {
-                Text(
-                    text = data[page].title,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    style = MaterialTheme.typography.headlineMedium.copy(
-                        fontWeight = FontWeight.Bold
+                AnimatedVisibility(
+                    visibleState = visibility,
+                    enter = slideInVertically(
+                        initialOffsetY = {
+                            it / 2
+                        },
                     ),
-                    color = Color.Black
-                )
+                    exit = slideOutVertically(
+                        targetOffsetY = {
+                            it / 2
+                        },
+                    ),
+                ) {
+                    Text(
+                        text = data[page].title,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        style = MaterialTheme.typography.headlineMedium.copy(
+                            fontWeight = FontWeight.Bold
+                        ),
+                        color = Color.Black
+                    )
+                }
                 4.spacer()
-                Text(
-                    text = "Score: ${data[page].score}",
-                    style = MaterialTheme.typography.titleLarge,
-                    color = Color.DarkGray
-                )
+                AnimatedVisibility(
+                    visibleState = visibility,
+                    enter = slideInVertically(
+                        initialOffsetY = {
+                            it / 2
+                        },
+                    ),
+                    exit = slideOutVertically(
+                        targetOffsetY = {
+                            it / 2
+                        },
+                    ),
+                ) {
+                    Text(
+                        text = "Score: ${data[page].score}",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = Color.DarkGray
+                    )
+                }
                 8.spacer()
             }
         }
