@@ -90,6 +90,7 @@ import com.skydoves.landscapist.glide.GlideImage
 import com.syakirarif.aniiki.apiservice.response.anime.AnimeResponse
 import com.syakirarif.aniiki.compose.ParallaxAlignment
 import com.syakirarif.aniiki.compose.fadingEdge
+import com.syakirarif.aniiki.compose.pagerFadeTransition
 import com.syakirarif.aniiki.compose.spacer
 import com.syakirarif.aniiki.compose.theme.md_theme_dark_surface
 import com.syakirarif.aniiki.compose.theme.md_theme_light_surface
@@ -244,13 +245,13 @@ fun HomeMainScreen(
                     errorMessageMain = animeSeasonState.errorMessage,
                     onItemClicked = onItemClicked
                 )
-                8.spacer()
-                HomeAnimeHeading(title = "Top 10 Airing Anime")
-                HomeAnimeList(
-                    homeUiState = animeTopAiring,
-                    onErrorClick = { },
-                    onItemClicked = onItemClicked
-                )
+//                8.spacer()
+//                HomeAnimeHeading(title = "Top 10 Airing Anime")
+//                HomeAnimeList(
+//                    homeUiState = animeTopAiring,
+//                    onErrorClick = { },
+//                    onItemClicked = onItemClicked
+//                )
                 8.spacer()
                 HomeAnimeHeading(title = "Top 10 Upcoming Anime")
                 HomeAnimeList(
@@ -319,40 +320,39 @@ fun HomeAnimePosterSlider(modifier: Modifier = Modifier, data: List<AnimeRespons
         0.7f to Color.Red,
         1f to Color.Transparent
     )
-
-    HorizontalPager(
-        state = pageState,
-        modifier = modifier
-            .fillMaxSize()
-            .pointerInput(Unit) {
-                detectHorizontalDragGestures { change, dragAmount ->
-                    change.consumeAllChanges()
-                    when {
-                        dragAmount < 0 -> {
-                            coroutineScope.launch { /* right */
-                                if (pageState.currentPage == data.lastIndex) {
-                                    pageState.animateScrollToPage(0)
-                                } else {
-                                    pageState.animateScrollToPage(pageState.currentPage + 1)
+    Box(modifier = Modifier.fillMaxSize()) {
+        HorizontalPager(
+            state = pageState,
+            modifier = modifier
+                .fillMaxSize()
+                .pointerInput(Unit) {
+                    detectHorizontalDragGestures { change, dragAmount ->
+                        change.consumeAllChanges()
+                        when {
+                            dragAmount < 0 -> {
+                                coroutineScope.launch { /* right */
+                                    if (pageState.currentPage == data.lastIndex) {
+                                        pageState.animateScrollToPage(0)
+                                    } else {
+                                        pageState.animateScrollToPage(pageState.currentPage + 1)
+                                    }
                                 }
                             }
-                        }
 
-                        dragAmount > 0 -> { /* left */
-                            coroutineScope.launch {
-                                if (pageState.currentPage == 0) {
-                                    pageState.animateScrollToPage(data.lastIndex)
-                                } else {
-                                    pageState.animateScrollToPage(pageState.currentPage - 1)
+                            dragAmount > 0 -> { /* left */
+                                coroutineScope.launch {
+                                    if (pageState.currentPage == 0) {
+                                        pageState.animateScrollToPage(data.lastIndex)
+                                    } else {
+                                        pageState.animateScrollToPage(pageState.currentPage - 1)
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            }
-    )
-    { page ->
-        Box(modifier = Modifier.fillMaxSize()) {
+        )
+        { page ->
             GlideImage(
                 imageModel = { data[page].images.webp.largeImageUrl },
                 imageOptions = ImageOptions(
@@ -362,7 +362,10 @@ fun HomeAnimePosterSlider(modifier: Modifier = Modifier, data: List<AnimeRespons
                             horizontalBias = {
                                 val adjustedOffset =
                                     pageState.currentPageOffsetFraction - pageState.initialPageOffsetFraction
-                                (adjustedOffset / pageState.pageCount.toFloat()).coerceIn(-1f, 1f)
+                                (adjustedOffset / pageState.pageCount.toFloat()).coerceIn(
+                                    -1f,
+                                    1f
+                                )
                             }
                         )
                     }
@@ -371,84 +374,75 @@ fun HomeAnimePosterSlider(modifier: Modifier = Modifier, data: List<AnimeRespons
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(480.dp)
+                    .pagerFadeTransition(page = page, pagerState = pageState)
                     .clickable {
 
                     }
             )
-//            Box(
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .height(heightSize.calculateTopPadding())
-//                    .background(Color.White.copy(alpha = 0.5f))
-//                    .align(Alignment.TopCenter)
-//            )
-            Column(
-                Modifier
-                    .align(Alignment.BottomCenter)
-                    .fadingEdge(topFade)
-                    .background(
-//                        Color.White.copy(
-//                            alpha = 0.9f
-//                        )
-                        brush = Brush.verticalGradient(
-                            colors = if (isInDarkTheme) listOf(
-                                md_theme_dark_surface.copy(alpha = 0.5f),
-                                md_theme_dark_surface
-                            ) else listOf(
-                                md_theme_light_surface.copy(alpha = 0.5f),
-                                md_theme_light_surface
-                            )
+        }
+        Column(
+            Modifier
+                .align(Alignment.BottomCenter)
+                .fadingEdge(topFade)
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = if (isInDarkTheme) listOf(
+                            md_theme_dark_surface.copy(alpha = 0.5f),
+                            md_theme_dark_surface
+                        ) else listOf(
+                            md_theme_light_surface.copy(alpha = 0.5f),
+                            md_theme_light_surface
                         )
                     )
-                    .fillMaxSize()
-                    .padding(start = 16.dp, end = 16.dp, top = 32.dp, bottom = 8.dp)
-                    .size(80.dp)
+                )
+                .fillMaxSize()
+                .padding(start = 16.dp, end = 16.dp, top = 32.dp, bottom = 8.dp)
+                .size(80.dp)
+        ) {
+            AnimatedVisibility(
+                visibleState = visibility,
+                enter = slideInVertically(
+                    initialOffsetY = {
+                        it / 2
+                    },
+                ),
+                exit = slideOutVertically(
+                    targetOffsetY = {
+                        it / 2
+                    },
+                ),
             ) {
-                AnimatedVisibility(
-                    visibleState = visibility,
-                    enter = slideInVertically(
-                        initialOffsetY = {
-                            it / 2
-                        },
+                Text(
+                    text = data[pageState.currentPage].title,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    style = MaterialTheme.typography.headlineMedium.copy(
+                        fontWeight = FontWeight.Bold
                     ),
-                    exit = slideOutVertically(
-                        targetOffsetY = {
-                            it / 2
-                        },
-                    ),
-                ) {
-                    Text(
-                        text = data[page].title,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        style = MaterialTheme.typography.headlineMedium.copy(
-                            fontWeight = FontWeight.Bold
-                        ),
-                        color = if (isInDarkTheme) Color.White else Color.Black
-                    )
-                }
-                4.spacer()
-                AnimatedVisibility(
-                    visibleState = visibility,
-                    enter = slideInVertically(
-                        initialOffsetY = {
-                            it / 2
-                        },
-                    ),
-                    exit = slideOutVertically(
-                        targetOffsetY = {
-                            it / 2
-                        },
-                    ),
-                ) {
-                    Text(
-                        text = "Score: ${data[page].score}",
-                        style = MaterialTheme.typography.titleLarge,
-                        color = if (isInDarkTheme) Color.LightGray else Color.DarkGray
-                    )
-                }
-                8.spacer()
+                    color = if (isInDarkTheme) Color.White else Color.Black
+                )
             }
+            4.spacer()
+            AnimatedVisibility(
+                visibleState = visibility,
+                enter = slideInVertically(
+                    initialOffsetY = {
+                        it / 2
+                    },
+                ),
+                exit = slideOutVertically(
+                    targetOffsetY = {
+                        it / 2
+                    },
+                ),
+            ) {
+                Text(
+                    text = "Score: ${data[pageState.currentPage].score}",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = if (isInDarkTheme) Color.LightGray else Color.DarkGray
+                )
+            }
+            8.spacer()
         }
     }
 }
