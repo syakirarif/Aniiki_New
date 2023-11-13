@@ -10,7 +10,7 @@ Anime app by Syakir Arif
 - Minimum SDK version: 26
 - Kotlin version: 1.9.20
 - Android Gradle version: 8.1.2
-- Compose Compiler version: 1Up.5.4
+- Compose Compiler version: 1.5.4
 
 ## Tech Stacks
 
@@ -24,6 +24,8 @@ Anime app by Syakir Arif
 - K2 Compiler
 - KSP (Kotlin Symbol Processing) v.1.9.20-1.0.14
 - Coroutines
+- Flow
+- Paging3
 
 ## Libraries and Plugins
 
@@ -35,7 +37,7 @@ Anime app by Syakir Arif
 - Hawk
 - Timber
 - Kiel
-- Coil
+- Landscapist-Glide
 - Lottie
 
 ## Creator
