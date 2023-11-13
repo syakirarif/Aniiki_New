@@ -1,6 +1,6 @@
-# Bidayah
+# Aniiki (New)
 
-Base scratch/skeleton app by Syakir Arif
+Anime app by Syakir Arif
 
 ## Andoid Config
 
@@ -8,8 +8,9 @@ Base scratch/skeleton app by Syakir Arif
 - Compile SDK version: 34
 - Target SDK version: 34
 - Minimum SDK version: 26
-- Kotlin version: 1.9.10
-- Android Gradle version: 8.1.1
+- Kotlin version: 1.9.20
+- Android Gradle version: 8.1.2
+- Compose Compiler version: 1Up.5.4
 
 ## Tech Stacks
 
@@ -21,7 +22,7 @@ Base scratch/skeleton app by Syakir Arif
 - Clean Architecture
 - Hilt v.2.48
 - K2 Compiler
-- KSP (Kotlin Symbol Processing) v.1.9.10-1.0.13
+- KSP (Kotlin Symbol Processing) v.1.9.20-1.0.14
 - Coroutines
 
 ## Libraries and Plugins
