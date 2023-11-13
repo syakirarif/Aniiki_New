@@ -3,6 +3,7 @@
 package com.aniiki.features.home.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,9 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -33,17 +32,21 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.glide.GlideImage
 import com.syakirarif.aniiki.apiservice.response.anime.AnimeResponse
-import com.syakirarif.aniiki.compose.radius
+import com.syakirarif.aniiki.compose.fadingEdge
 import com.syakirarif.aniiki.compose.spacer
+import com.syakirarif.aniiki.compose.theme.md_theme_dark_surface
+import com.syakirarif.aniiki.compose.theme.md_theme_light_surface
 import com.syakirarif.aniiki.core.utils.orNullEmpty
 
 
@@ -55,21 +58,57 @@ fun DetailMainScreen(detailViewModel: DetailViewModel, onBackPressed: () -> Unit
     ) {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
-            topBar = {},
+            topBar = {
+                DetailScreenTopBar(onBackPressed = onBackPressed)
+            },
             bottomBar = {}
 //        color = MaterialTheme.colorScheme.background
         ) { innerPadding ->
             DetailMainScreen2(
                 detailViewModel = detailViewModel,
                 onBackPressed = onBackPressed,
-                modifier = Modifier.padding(
+                modifier = Modifier.padding(innerPadding)
+//                modifier = Modifier.padding(
 //                    start = innerPadding.calculateStartPadding(LayoutDirection.Ltr),
 //                    end = innerPadding.calculateEndPadding(LayoutDirection.Ltr),
-                    bottom = innerPadding.calculateBottomPadding()
-                )
+//                    bottom = innerPadding.calculateBottomPadding()
+//                )
             )
         }
     }
+}
+
+@Composable
+fun DetailScreenTopBar(onBackPressed: () -> Unit, modifier: Modifier = Modifier) {
+    TopAppBar(
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = Color.Transparent
+        ),
+        title = {
+//                        Text(
+//                            anime.title.orNullEmpty(),
+//                            style = MaterialTheme.typography.titleLarge,
+//                            color = Color.White
+//                        )
+        },
+        navigationIcon = {
+            IconButton(onClick = { onBackPressed() })
+            {
+                Icon(
+                    imageVector = Icons.Filled.KeyboardArrowLeft,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp)
+                        .shadow(8.dp),
+                    tint = Color.White
+                )
+            }
+        },
+//                    colors = TopAppBarDefaults.topAppBarColors()
+//                backgroundColor = MaterialTheme.colorScheme.background,
+//                contentColor = MaterialTheme.colorScheme.background,
+//                elevation = 0.dp
+    )
 }
 
 @Composable
@@ -119,17 +158,25 @@ fun DetailMainScreen2(
     val posterSize = 600
 
     val context = LocalContext.current
+
+    val topFade = Brush.verticalGradient(0f to Color.Transparent, 0.3f to Color.Red)
+
+    val isInDarkTheme = isSystemInDarkTheme()
+
+    val textColor = if (isInDarkTheme) Color.White else Color.Black
+
+    val bgColor = if (isInDarkTheme) md_theme_dark_surface else md_theme_light_surface
     Box(
-        contentAlignment = Alignment.TopCenter,
-        modifier = modifier
+//        contentAlignment = Alignment.TopCenter,
+        modifier = Modifier
             .fillMaxSize()
-            .background(color = Color.Black)
+            .background(color = bgColor)
     ) {
         Box(
             Modifier.align(Alignment.TopCenter)
         ) {
             GlideImage(
-                imageModel = { anime.images?.webp?.largeImageUrl },
+                imageModel = { anime.images.webp.largeImageUrl },
                 imageOptions = ImageOptions(
                     contentScale = ContentScale.Crop
                 ),
@@ -143,142 +190,144 @@ fun DetailMainScreen2(
             )
             Box(
                 modifier = Modifier
-                    .height(70.dp)
+                    .align(Alignment.BottomCenter)
+                    .height(60.dp)
                     .fillMaxWidth()
+                    .fadingEdge(topFade)
                     .background(
                         brush = Brush.verticalGradient(
-                            colors = listOf(
-                                Color.Black.copy(alpha = 0.4f),
-                                Color.Black
+                            colors = if (isInDarkTheme) listOf(
+                                md_theme_dark_surface.copy(alpha = 0.5f),
+                                md_theme_dark_surface
+                            ) else listOf(
+                                md_theme_light_surface.copy(alpha = 0.5f),
+                                md_theme_light_surface
                             )
                         )
                     )
-                    .align(Alignment.BottomCenter),
+                    .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 8.dp)
             )
         }
 
-        Column(
+        LazyColumn(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+                .background(color = bgColor)
         ) {
-            TopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent.copy(
-                        alpha = 0.3f
-                    )
-                ),
-                title = {
-                    Text(
-                        anime.title.orNullEmpty(),
-                        style = MaterialTheme.typography.titleLarge,
-                        color = Color.White
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { onBackPressed() })
-                    {
-                        Icon(
-                            imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = null,
-                            modifier = Modifier.padding(horizontal = 8.dp),
-                            tint = Color.White
-                        )
-                    }
-                },
-//                    colors = TopAppBarDefaults.topAppBarColors()
-//                backgroundColor = MaterialTheme.colorScheme.background,
-//                contentColor = MaterialTheme.colorScheme.background,
-//                elevation = 0.dp
-            )
-            Box(
-                contentAlignment = Alignment.BottomCenter,
-                modifier = Modifier.background(
-                    color = Color.Transparent
+            item {
+                20.spacer()
+                Text(
+                    text = anime.title.orNullEmpty(),
+                    style = MaterialTheme.typography.headlineLarge.copy(
+                        fontWeight = FontWeight.Bold
+                    ),
+                    color = textColor,
+                    modifier = Modifier
+                        .padding(start = 16.dp),
                 )
-            ) {
-                LazyColumn(
+                10.spacer()
+                Text(
+                    text = anime.synopsis.orNullEmpty(),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = textColor,
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(bottom = 75.dp)
-//                        .padding(paddingValues)
-                ) {
-                    item {
-                        500.spacer()
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp))
-                                .background(Color.White)
-                        ) {
-                            20.spacer()
-                            Text(
-                                text = anime.title.orNullEmpty(),
-                                style = MaterialTheme.typography.headlineLarge,
-                                color = Color.Black,
-                                modifier = Modifier
-                                    .padding(start = 16.dp),
-                            )
-                            10.spacer()
-                            Text(
-                                text = anime.synopsis.orNullEmpty(),
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = Color.Black,
-                                modifier = Modifier
-                                    .padding(horizontal = 16.dp),
-                            )
-                            20.spacer()
-                            Text(
-                                text = "Subject Details",
-                                style = MaterialTheme.typography.headlineSmall,
-                                color = Color.Black,
-                                modifier = Modifier
-                                    .padding(start = 16.dp)
-                            )
-                            20.spacer()
-                            TableDetails(
-                                anime = anime,
-                                modifier = Modifier.padding(horizontal = 16.dp)
-                            )
-                            120.spacer()
-                        }
-
-                    }
-//                itemsIndexed(
-//                    eduSubjectDetailsData
-//                ) { i, item ->
-//                    EduSubjectDetailListComponent(item, i)
-//                }
-                }
-                Button(
-                    onClick = {
-//                    navController.navigate(EduScreenRoutes.SubjectDetailDescriptionScreen.routes)
-                    },
-                    shape = 24.radius(),
-                    elevation = ButtonDefaults.buttonElevation(),
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-                    enabled = true,
+                        .padding(horizontal = 16.dp),
+                )
+                20.spacer()
+                Text(
+                    text = "Subject Details",
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = textColor,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(80.dp)
-                        .background(Color.White)
-                        .padding(
-                            start = 32.dp,
-                            end = 32.dp,
-                            top = 16.dp,
-                            bottom = 16.dp
-                        )
-                ) {
-                    Text(
-                        modifier = Modifier.padding(
-                            start = 16.dp,
-                            top = 4.dp,
-                            bottom = 4.dp,
-                            end = 16.dp
-                        ),
-                        text = "Continue",
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                }
+                        .padding(start = 16.dp)
+                )
+                20.spacer()
+                TableDetails(
+                    anime = anime,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+                80.spacer()
             }
         }
+
+//        Column(
+//        ) {
+//            TopAppBar(
+//                colors = TopAppBarDefaults.topAppBarColors(
+//                    containerColor = Color.Transparent.copy(
+//                        alpha = 0.3f
+//                    )
+//                ),
+//                title = {
+//                    Text(
+//                        anime.title.orNullEmpty(),
+//                        style = MaterialTheme.typography.titleLarge,
+//                        color = Color.White
+//                    )
+//                },
+//                navigationIcon = {
+//                    IconButton(onClick = { onBackPressed() })
+//                    {
+//                        Icon(
+//                            imageVector = Icons.Filled.ArrowBack,
+//                            contentDescription = null,
+//                            modifier = Modifier.padding(horizontal = 8.dp),
+//                            tint = Color.White
+//                        )
+//                    }
+//                },
+////                    colors = TopAppBarDefaults.topAppBarColors()
+////                backgroundColor = MaterialTheme.colorScheme.background,
+////                contentColor = MaterialTheme.colorScheme.background,
+////                elevation = 0.dp
+//            )
+//            Box(
+//                contentAlignment = Alignment.BottomCenter,
+//                modifier = Modifier.background(
+//                    color = Color.Transparent
+//                )
+//            ) {
+//
+////                itemsIndexed(
+////                    eduSubjectDetailsData
+////                ) { i, item ->
+////                    EduSubjectDetailListComponent(item, i)
+////                }
+//                }
+//                Button(
+//                    onClick = {
+////                    navController.navigate(EduScreenRoutes.SubjectDetailDescriptionScreen.routes)
+//                    },
+//                    shape = 24.radius(),
+//                    elevation = ButtonDefaults.buttonElevation(),
+//                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+//                    enabled = true,
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .height(80.dp)
+//                        .background(Color.White)
+//                        .padding(
+//                            start = 32.dp,
+//                            end = 32.dp,
+//                            top = 16.dp,
+//                            bottom = 16.dp
+//                        )
+//                ) {
+//                    Text(
+//                        modifier = Modifier.padding(
+//                            start = 16.dp,
+//                            top = 4.dp,
+//                            bottom = 4.dp,
+//                            end = 16.dp
+//                        ),
+//                        text = "Continue",
+//                        style = MaterialTheme.typography.titleMedium
+//                    )
+//                }
+//            }
+//        }
     }
 }
 
@@ -305,7 +354,15 @@ fun ItemDetail(title: String, value: String) {
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = title, modifier = Modifier.weight(1f))
-        Text(text = value, modifier = Modifier.weight(1f))
+        Text(
+            text = title,
+            modifier = Modifier.weight(1f),
+            style = MaterialTheme.typography.bodyLarge
+        )
+        Text(
+            text = value,
+            modifier = Modifier.weight(1f),
+            style = MaterialTheme.typography.bodyLarge
+        )
     }
 }

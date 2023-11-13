@@ -23,11 +23,12 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -383,6 +384,9 @@ fun HomeAnimePosterSlider(modifier: Modifier = Modifier, data: List<AnimeRespons
         Column(
             Modifier
                 .align(Alignment.BottomCenter)
+                .defaultMinSize(minHeight = 120.dp)
+                .fillMaxHeight()
+                .fillMaxWidth()
                 .fadingEdge(topFade)
                 .background(
                     brush = Brush.verticalGradient(
@@ -395,9 +399,8 @@ fun HomeAnimePosterSlider(modifier: Modifier = Modifier, data: List<AnimeRespons
                         )
                     )
                 )
-                .fillMaxSize()
                 .padding(start = 16.dp, end = 16.dp, top = 32.dp, bottom = 8.dp)
-                .size(80.dp)
+
         ) {
             AnimatedVisibility(
                 visibleState = visibility,
