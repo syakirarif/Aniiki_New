@@ -15,6 +15,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -53,6 +54,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -82,12 +84,15 @@ import androidx.navigation.compose.rememberNavController
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.glide.GlideImage
 import com.syakirarif.aniiki.apiservice.response.anime.AnimeResponse
 import com.syakirarif.aniiki.compose.ParallaxAlignment
 import com.syakirarif.aniiki.compose.fadingEdge
 import com.syakirarif.aniiki.compose.spacer
+import com.syakirarif.aniiki.compose.theme.md_theme_dark_surface
+import com.syakirarif.aniiki.compose.theme.md_theme_light_surface
 import com.syakirarif.aniiki.core.utils.getCurrentAnimeSeason
 import com.syakirarif.aniiki.core.utils.getCurrentYear
 import kotlinx.coroutines.CoroutineScope
@@ -153,7 +158,10 @@ fun HomeScreenApp(
                     homeViewModel = homeViewModel,
                     scheduleViewModel = scheduleViewModel,
                     detailViewModel = detailViewModel,
-                    modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding())
+                    modifier = if (animeTopAiring.isLoading) Modifier.padding(
+                        top = innerPadding.calculateTopPadding(),
+                        bottom = innerPadding.calculateBottomPadding()
+                    ) else Modifier.padding(bottom = innerPadding.calculateBottomPadding())
                 )
             }
         }
@@ -167,7 +175,32 @@ fun HomeScreenApp(
 }
 
 @Composable
-fun HomeMainScreen(homeViewModel: HomeViewModel, onItemClicked: (AnimeResponse?) -> Unit) {
+fun HomeMainScreen(
+    homeViewModel: HomeViewModel,
+    onItemClicked: (AnimeResponse?) -> Unit,
+    modifier: Modifier = Modifier
+) {
+
+    val systemUiController = rememberSystemUiController()
+//    val useDarkIcons = !isSystemInDarkTheme()
+//    val color = MaterialTheme.colorScheme.surface
+//    val color = NavigationBarDefaults.containerColor
+//    val color = MaterialTheme.colorScheme.contentColorFor(containerColor)
+
+    DisposableEffect(key1 = systemUiController) {
+
+//        systemUiController.setSystemBarsColor(
+//            color = Color.Transparent,
+//            darkIcons = useDarkIcons
+//        )
+
+        systemUiController.setStatusBarColor(
+            color = Color.Transparent,
+            darkIcons = false
+        )
+
+        onDispose { }
+    }
 
     val animeTopAiring by homeViewModel.animeTopAiring.collectAsState()
     val animeTopUpcomingState by homeViewModel.animeTopUpcomingState.collectAsState()
@@ -187,6 +220,8 @@ fun HomeMainScreen(homeViewModel: HomeViewModel, onItemClicked: (AnimeResponse?)
         }
     }
 
+    val heightSize = WindowInsets.systemBars.asPaddingValues()
+
     Surface(
         modifier = Modifier
             .fillMaxSize()
@@ -198,7 +233,11 @@ fun HomeMainScreen(homeViewModel: HomeViewModel, onItemClicked: (AnimeResponse?)
                 if (!animeTopAiring.isLoading) {
                     HomeAnimePosterSlider(data = banner)
                 }
-                HomeAnimeHeading(title = "$season Anime")
+                HomeAnimeHeading(
+                    title = "$season Anime", modifier = Modifier.padding(
+                        top = heightSize.calculateTopPadding()
+                    )
+                )
                 HomeAnimeList(
                     pagingItems = animeSeasonPagingItems,
                     onErrorClick = { homeViewModel.fetchAnimePaging() },
@@ -229,6 +268,8 @@ fun HomeMainScreen(homeViewModel: HomeViewModel, onItemClicked: (AnimeResponse?)
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeAnimePosterSlider(modifier: Modifier = Modifier, data: List<AnimeResponse>) {
+
+    val isInDarkTheme = isSystemInDarkTheme()
 
     val pageState = rememberPagerState { data.size }
     val heightSize = WindowInsets.systemBars.asPaddingValues()
@@ -350,9 +391,12 @@ fun HomeAnimePosterSlider(modifier: Modifier = Modifier, data: List<AnimeRespons
 //                            alpha = 0.9f
 //                        )
                         brush = Brush.verticalGradient(
-                            colors = listOf(
-                                Color.White.copy(alpha = 0.4f),
-                                Color.White
+                            colors = if (isInDarkTheme) listOf(
+                                md_theme_dark_surface.copy(alpha = 0.5f),
+                                md_theme_dark_surface
+                            ) else listOf(
+                                md_theme_light_surface.copy(alpha = 0.5f),
+                                md_theme_light_surface
                             )
                         )
                     )
@@ -380,7 +424,7 @@ fun HomeAnimePosterSlider(modifier: Modifier = Modifier, data: List<AnimeRespons
                         style = MaterialTheme.typography.headlineMedium.copy(
                             fontWeight = FontWeight.Bold
                         ),
-                        color = Color.Black
+                        color = if (isInDarkTheme) Color.White else Color.Black
                     )
                 }
                 4.spacer()
@@ -400,7 +444,7 @@ fun HomeAnimePosterSlider(modifier: Modifier = Modifier, data: List<AnimeRespons
                     Text(
                         text = "Score: ${data[page].score}",
                         style = MaterialTheme.typography.titleLarge,
-                        color = Color.DarkGray
+                        color = if (isInDarkTheme) Color.LightGray else Color.DarkGray
                     )
                 }
                 8.spacer()
@@ -424,11 +468,18 @@ fun HomeTopAppBar(scrollBehavior: TopAppBarScrollBehavior, modifier: Modifier = 
 }
 
 @Composable
-fun HomeAnimeHeading(title: String) {
+fun HomeAnimeHeading(title: String, modifier: Modifier = Modifier) {
+
+    val heightSize = WindowInsets.systemBars.asPaddingValues()
+
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(
+                start = 16.dp,
+                end = 16.dp,
+                bottom = 16.dp
+            ),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
