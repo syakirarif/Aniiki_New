@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -23,7 +24,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -80,7 +80,10 @@ fun DetailMainScreen(detailViewModel: DetailViewModel, onBackPressed: () -> Unit
 
 @Composable
 fun DetailScreenTopBar(onBackPressed: () -> Unit, modifier: Modifier = Modifier) {
-    TopAppBar(
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
+    CenterAlignedTopAppBar(
+        scrollBehavior = scrollBehavior,
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = Color.Transparent
         ),
@@ -208,47 +211,54 @@ fun DetailMainScreen2(
                     .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 8.dp)
             )
         }
-
         LazyColumn(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
-                .background(color = bgColor)
+                .fillMaxSize()
+                .background(color = Color.Transparent)
         ) {
             item {
-                20.spacer()
-                Text(
-                    text = anime.title.orNullEmpty(),
-                    style = MaterialTheme.typography.headlineLarge.copy(
-                        fontWeight = FontWeight.Bold
-                    ),
-                    color = textColor,
-                    modifier = Modifier
-                        .padding(start = 16.dp),
-                )
-                10.spacer()
-                Text(
-                    text = anime.synopsis.orNullEmpty(),
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = textColor,
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp),
-                )
-                20.spacer()
-                Text(
-                    text = "Subject Details",
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = textColor,
-                    modifier = Modifier
-                        .padding(start = 16.dp)
-                )
-                20.spacer()
-                TableDetails(
-                    anime = anime,
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
-                80.spacer()
+                (posterSize - 100).spacer()
+                Column(
+                    Modifier
+                        .fillMaxSize()
+                        .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+                        .background(color = bgColor)
+                ) {
+                    20.spacer()
+                    Text(
+                        text = anime.title.orNullEmpty(),
+                        style = MaterialTheme.typography.headlineLarge.copy(
+                            fontWeight = FontWeight.Bold
+                        ),
+                        color = textColor,
+                        modifier = Modifier
+                            .padding(start = 16.dp),
+                    )
+                    10.spacer()
+                    Text(
+                        text = anime.synopsis.orNullEmpty(),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = textColor,
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp),
+                    )
+                    20.spacer()
+                    Text(
+                        text = "Subject Details",
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = textColor,
+                        modifier = Modifier
+                            .padding(start = 16.dp)
+                    )
+                    20.spacer()
+                    TableDetails(
+                        anime = anime,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                    80.spacer()
+                }
+
             }
         }
 
