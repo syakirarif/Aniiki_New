@@ -2,6 +2,8 @@ package com.syakirarif.aniiki.apiservice.api
 
 import com.skydoves.sandwich.ApiResponse
 import com.syakirarif.aniiki.apiservice.response.anime.AnimeResponse
+import com.syakirarif.aniiki.apiservice.response.anime.childs.Character
+import com.syakirarif.aniiki.apiservice.response.anime.childs.Images
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -62,13 +64,14 @@ interface AnimeEndpoints {
         @Query("filter") day: String
     ): ApiResponse<JikanBaseResponse>
 
-//    @GET("seasons/2023/fall")
-//    @PagingKeyConfig(
-//        keySize = 20,
-//        mapper = AnimePagingMapper::class
-//    )
-//    suspend fun getAnimeSeasonPaging(
-//        @Query("limit") limit: Int = 20,
-//        @PagingKey @Query("page") page: Int = 0
-//    ): NetworkPagingSource<JikanBaseResponse, AnimeResponse>
+    @GET("anime/{anime_id}/pictures")
+    suspend fun getAnimePictures(
+        @Path(value = "anime_id", encoded = true) animeId: String
+    ): ApiResponse<JikanBaseResponseGeneric<List<Images>>>
+
+    @GET("anime/{anime_id}/characters")
+    suspend fun getAnimeCharacters(
+        @Path(value = "anime_id", encoded = true) animeId: String
+    ): ApiResponse<JikanBaseResponseGeneric<List<Character>>>
+
 }

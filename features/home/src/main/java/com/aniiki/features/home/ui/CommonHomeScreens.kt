@@ -13,6 +13,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
+import com.aniiki.features.home.ui.state.HomeUiState
 import com.syakirarif.aniiki.apiservice.response.anime.AnimeResponse
 import retrofit2.HttpException
 import timber.log.Timber

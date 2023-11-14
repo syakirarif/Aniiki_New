@@ -2,7 +2,7 @@ package com.aniiki.features.home.repository
 
 import androidx.annotation.WorkerThread
 import androidx.paging.PagingData
-import com.aniiki.features.home.ui.HomeUiState
+import com.aniiki.features.home.ui.state.HomeUiState
 import com.skydoves.sandwich.suspendOnError
 import com.skydoves.sandwich.suspendOnSuccess
 import com.syakirarif.aniiki.apiservice.api.AnimeEndpoints
@@ -59,6 +59,8 @@ class HomeRepository constructor(
     fun getAnimeTopUpcoming(): Flow<HomeUiState> = flow {
         val response = animeEndpoints.getAnimeTopUpcoming()
         response.suspendOnSuccess {
+//            val jsonObject = JSONObject(this.toString())
+//            val errorMessage = jsonObject.getString("error")
             emit(
                 HomeUiState(
                     isLoading = false,

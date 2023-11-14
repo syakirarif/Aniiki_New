@@ -2,7 +2,7 @@ package com.aniiki.features.home.repository
 
 import androidx.annotation.WorkerThread
 import androidx.paging.PagingData
-import com.aniiki.features.home.ui.HomeUiState
+import com.aniiki.features.home.ui.state.HomeUiState
 import com.skydoves.sandwich.suspendOnError
 import com.skydoves.sandwich.suspendOnSuccess
 import com.syakirarif.aniiki.apiservice.api.AnimeEndpoints

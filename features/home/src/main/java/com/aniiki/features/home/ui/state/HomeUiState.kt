@@ -1,4 +1,4 @@
-package com.aniiki.features.home.ui
+package com.aniiki.features.home.ui.state
 
 import androidx.paging.PagingData
 import com.syakirarif.aniiki.apiservice.response.anime.AnimeResponse

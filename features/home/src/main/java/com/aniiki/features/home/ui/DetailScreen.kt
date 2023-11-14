@@ -27,6 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -48,6 +49,8 @@ import com.syakirarif.aniiki.compose.spacer
 import com.syakirarif.aniiki.compose.theme.md_theme_dark_surface
 import com.syakirarif.aniiki.compose.theme.md_theme_light_surface
 import com.syakirarif.aniiki.core.utils.orNullEmpty
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import timber.log.Timber
 
 
 @Composable
@@ -114,6 +117,7 @@ fun DetailScreenTopBar(onBackPressed: () -> Unit, modifier: Modifier = Modifier)
     )
 }
 
+@ExperimentalCoroutinesApi
 @Composable
 fun DetailMainScreen2(
     detailViewModel: DetailViewModel,
@@ -158,6 +162,16 @@ fun DetailMainScreen2(
 
     val anime by detailViewModel.animeResponse.collectAsState()
 
+//    detailViewModel.animeId = anime.malId.orNullEmpty()
+//    detailViewModel.getAnimePictures4(anime.malId.orNullEmpty())
+//    detailViewModel.getAnimePictures4("53887")
+//    detailViewModel.getAnimePictures4()
+
+    val animePictures by detailViewModel.animePictures2
+        .collectAsState()
+
+//    detailViewModel.getAnimePictures(anime.malId.orNullEmpty())
+
     val posterSize = 600
 
     val context = LocalContext.current
@@ -169,6 +183,18 @@ fun DetailMainScreen2(
     val textColor = if (isInDarkTheme) Color.White else Color.Black
 
     val bgColor = if (isInDarkTheme) md_theme_dark_surface else md_theme_light_surface
+
+    LaunchedEffect(key1 = animePictures) {
+        Timber.e("animePictures | isLoading => ${animePictures.isLoading}")
+        Timber.e("animePictures | isError => ${animePictures.isError}")
+
+        if (!animePictures.isLoading) {
+            Timber.e("animePictures | data => ${animePictures.dataPictures.size}")
+        }
+    }
+
+//    Timber.e("animePictures | data => ${animePictures.size}")
+
     Box(
 //        contentAlignment = Alignment.TopCenter,
         modifier = Modifier
