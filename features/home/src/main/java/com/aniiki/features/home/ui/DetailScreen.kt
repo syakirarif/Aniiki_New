@@ -20,10 +20,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
@@ -39,7 +43,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -62,8 +65,10 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.glide.GlideImage
 import com.syakirarif.aniiki.apiservice.response.anime.AnimeResponse
+import com.syakirarif.aniiki.apiservice.response.anime.childs.Character
 import com.syakirarif.aniiki.compose.fadingEdge
 import com.syakirarif.aniiki.compose.pagerFadeTransition
+import com.syakirarif.aniiki.compose.radius
 import com.syakirarif.aniiki.compose.spacer
 import com.syakirarif.aniiki.compose.theme.md_theme_dark_surface
 import com.syakirarif.aniiki.compose.theme.md_theme_light_surface
@@ -191,8 +196,10 @@ fun DetailMainScreen2(
 //    detailViewModel.getAnimePictures4("53887")
 //    detailViewModel.getAnimePictures4()
 
-    val animePictures by detailViewModel.animePictures2
-        .collectAsState()
+    val animePictures by detailViewModel.animePictures2.collectAsState()
+
+    val animeCharacters by detailViewModel.animeCharacters.collectAsState()
+
 
 //    val animeId by detailViewModel.animeId.collectAsState()
 
@@ -210,14 +217,11 @@ fun DetailMainScreen2(
 
     val bgColor = if (isInDarkTheme) md_theme_dark_surface else md_theme_light_surface
 
-    SideEffect {
-
-    }
-
     val animeId = rememberSaveable { anime.malId.orNullEmpty() }
 
     LaunchedEffect(key1 = animeId) {
         detailViewModel.getAnimePictures4(animeId)
+        detailViewModel.getAnimeCharacters(animeId)
 //        Timber.e("animePictures | isLoading => ${animePictures.isLoading}")
 //        Timber.e("animePictures | isError => ${animePictures.isError}")
 //
@@ -334,6 +338,7 @@ fun DetailMainScreen2(
                         modifier = Modifier
                             .padding(horizontal = 16.dp),
                     )
+
                     20.spacer()
                     Text(
                         text = "Subject Details",
@@ -347,9 +352,32 @@ fun DetailMainScreen2(
                         anime = anime,
                         modifier = Modifier.padding(horizontal = 16.dp)
                     )
+                    20.spacer()
+                    Text(
+                        text = "Characters & Casts",
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = textColor,
+                        modifier = Modifier
+                            .padding(start = 16.dp)
+                    )
+                    20.spacer()
+                    LazyRow(
+//                    Modifier.fillMaxSize()
+//                    rows = GridCells.Adaptive(minSize = 140.dp),
+//                    contentPadding = PaddingValues(bottom = 80.dp),
+//                    modifier = Modifier
+////                            .defaultMinSize(140.dp)
+//                        .padding(start = 16.dp),
+//                        contentPadding = PaddingValues(end = 16.dp)
+                    ) {
+//                        Timber.e("animeCharacters | items: ${animeCharacters.size}")
+                        items(animeCharacters) { item ->
+                            if (item.voiceActors.isNotEmpty())
+                                CharacterComponent(item = item)
+                        }
+                    }
                     80.spacer()
                 }
-
             }
         }
 
@@ -603,4 +631,97 @@ fun DetailAnimePosterSlider(modifier: Modifier = Modifier, data: List<String>) {
 //
 //        )
 //    }
+}
+
+@Composable
+fun CharacterComponent(item: Character) {
+//    val liked = remember { mutableStateOf(item.favourite) }
+    Box(
+        contentAlignment = Alignment.BottomStart,
+        modifier = Modifier
+            .height(265.dp)
+            .fillMaxWidth()
+            .background(Color.Black.copy(alpha = 0.5F))
+            .padding(16.dp)
+    ) {
+        GlideImage(
+            imageModel = { item.character.images.jpg.imageUrl },
+            modifier = Modifier
+                .clip(16.radius())
+                .fillMaxSize()
+        )
+        Box(
+            modifier = Modifier
+                .padding(10.dp)
+//                .clip(CircleShape)
+//                .background(Color.Black.copy(alpha = 0.5F))
+//                .size(28.dp)
+                .fillMaxWidth()
+                .align(Alignment.TopStart)
+                .clickable {
+//                    liked.value = !liked.value
+                })
+        {
+//            val tint by animateColorAsState(
+//                if (liked.value) Color.Red
+//                else Color.LightGray, label = ""
+//            )
+//            Icon(
+//                if (liked.value) Icons.Default.Favorite else Icons.Outlined.FavoriteBorder,
+//                contentDescription = "",
+//                tint = tint,
+//                modifier = Modifier
+//                    .align(Alignment.Center)
+//                    .padding(6.dp)
+//            )
+            Column(
+                modifier = Modifier.background(Color.Black.copy(alpha = 0.5F)),
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    item.character.name,
+                    style = MaterialTheme.typography.labelLarge,
+                    color = Color.White
+                )
+                Text(
+                    item.role,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = Color.White.copy(alpha = 0.7F)
+                )
+            }
+        }
+
+        Row(
+            modifier = Modifier
+                .padding(10.dp, 0.dp, 10.dp, 16.dp)
+                .fillMaxWidth()
+                .background(Color.Black.copy(alpha = 0.5F)),
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.Bottom
+        ) {
+            GlideImage(
+                imageModel = { item.voiceActors[0].person.images.jpg.imageUrl },
+                modifier = Modifier
+                    .size(38.dp)
+                    .clip(CircleShape),
+                imageOptions = ImageOptions(
+                    contentScale = ContentScale.Crop,
+                ),
+
+                )
+            8.spacer()
+            Column(verticalArrangement = Arrangement.Center) {
+                Text(
+                    item.voiceActors[0].person.name,
+                    style = MaterialTheme.typography.labelLarge,
+                    color = Color.White
+                )
+                Text(
+                    item.voiceActors[0].language,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = Color.White.copy(alpha = 0.7F)
+                )
+            }
+        }
+    }
 }

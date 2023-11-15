@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.aniiki.features.home.repository.DetailRepository
 import com.aniiki.features.home.ui.state.DetailUiState
 import com.syakirarif.aniiki.apiservice.response.anime.AnimeResponse
+import com.syakirarif.aniiki.apiservice.response.anime.childs.Character
 import com.syakirarif.aniiki.apiservice.response.anime.childs.Images
 import com.syakirarif.aniiki.core.utils.orNullEmpty
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -32,8 +33,8 @@ class DetailViewModel @Inject constructor(
     private val _animePictures2 = MutableStateFlow(DetailUiState())
     val animePictures2: StateFlow<DetailUiState> get() = _animePictures2
 
-    private val _animeCharacters = MutableStateFlow(DetailUiState())
-    val animeCharacters: StateFlow<DetailUiState> get() = _animeCharacters
+    private val _animeCharacters = MutableStateFlow<List<Character>>(mutableListOf())
+    val animeCharacters: StateFlow<List<Character>> get() = _animeCharacters
 
     //    var animeId = "0"
 //    private val animeId = animeResponse.value.malId.orNullEmpty()
@@ -46,11 +47,12 @@ class DetailViewModel @Inject constructor(
     }
 
     fun getAnimeCharacters(malId: String) {
-        _animeCharacters.value = detailRepository.getAnimeCharacters(animeId = malId).stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000L),
-            initialValue = DetailUiState(isLoading = true)
-        ).value
+        viewModelScope.launch {
+            detailRepository.getAnimeCharacters(animeId = malId).collectLatest {
+                _animeCharacters.value = it.dataCharacters
+            }
+        }
+
     }
 
     fun getAnimePictures4(malId: String) {

@@ -10,5 +10,6 @@ data class Character(
     @SerializedName("favorites")
     var favorites: Int = 0,
     @SerializedName("voice_actors")
-    var voiceActors: VoiceActor = VoiceActor(),
+    var voiceActors: List<VoiceActor> = mutableListOf(VoiceActor()),
+//    var favourite: Boolean = false
 )

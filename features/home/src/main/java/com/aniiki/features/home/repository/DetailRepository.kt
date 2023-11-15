@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onStart
-import org.json.JSONObject
+import timber.log.Timber
 
 class DetailRepository constructor(
     private val animeEndpoints: AnimeEndpoints
@@ -38,13 +38,13 @@ class DetailRepository constructor(
                 )
             )
         }.suspendOnError {
-            val jsonObject = JSONObject(this.toString())
-            val errorMessage = jsonObject.getString("message")
+//            val jsonObject = JSONObject(this.toString())
+//            val errorMessage = jsonObject.getString("message")
             emit(
                 DetailUiState(
                     isLoading = false,
                     isError = this.isError,
-                    errorMessage = errorMessage
+                    errorMessage = this.message()
                 )
             )
         }.suspendOnException {
@@ -73,25 +73,45 @@ class DetailRepository constructor(
         val response = animeEndpoints.getAnimeCharacters(animeId = animeId)
 
         response.suspendOnSuccess {
+            Timber.e("DetailRepository | getAnimeCharacters | onSuccess | items: ${this.data.data?.size}")
             emit(
                 DetailUiState(
                     isLoading = false,
-                    isError = false,
-                    errorMessage = this.response.message(),
+                    isError = !this.isSuccess,
+                    errorMessage = this.messageOrNull ?: "",
                     dataCharacters = this.data.data ?: mutableListOf()
                 )
             )
         }.suspendOnError {
-            val jsonObject = JSONObject(this.toString())
-            val errorMessage = jsonObject.getString("message")
+            Timber.e("DetailRepository | getAnimeCharacters | onError | msg: ${this.message()}")
+//            val jsonObject = JSONObject(this.toString())
+//            val errorMessage = jsonObject.getString("message")
             emit(
                 DetailUiState(
                     isLoading = false,
-                    isError = true,
-                    errorMessage = errorMessage
+                    isError = this.isError,
+                    errorMessage = this.message()
+                )
+            )
+        }.suspendOnFailure {
+            Timber.e("DetailRepository | getAnimeCharacters | onFailure | msg: ${this.message()}")
+            emit(
+                DetailUiState(
+                    isLoading = false,
+                    isError = this.isFailure,
+                    errorMessage = this.message()
+                )
+            )
+        }.suspendOnException {
+            Timber.e("DetailRepository | getAnimeCharacters | onException | msg: ${this.message()}")
+            emit(
+                DetailUiState(
+                    isLoading = false,
+                    isError = this.isException,
+                    errorMessage = this.message()
                 )
             )
         }
 
-    }.flowOn(Dispatchers.IO)
+    }.onStart { emit(DetailUiState(isLoading = true)) }.flowOn(Dispatchers.IO)
 }
