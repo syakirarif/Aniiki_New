@@ -3,7 +3,14 @@ package com.aniiki.features.home.repository
 import androidx.annotation.WorkerThread
 import androidx.paging.PagingData
 import com.aniiki.features.home.ui.state.HomeUiState
+import com.skydoves.sandwich.isError
+import com.skydoves.sandwich.isException
+import com.skydoves.sandwich.isFailure
+import com.skydoves.sandwich.isSuccess
+import com.skydoves.sandwich.message
 import com.skydoves.sandwich.suspendOnError
+import com.skydoves.sandwich.suspendOnException
+import com.skydoves.sandwich.suspendOnFailure
 import com.skydoves.sandwich.suspendOnSuccess
 import com.syakirarif.aniiki.apiservice.api.AnimeEndpoints
 import com.syakirarif.aniiki.apiservice.response.anime.AnimeResponse
@@ -14,6 +21,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.onStart
 import org.json.JSONObject
 
 class HomeRepository constructor(
@@ -64,7 +72,7 @@ class HomeRepository constructor(
             emit(
                 HomeUiState(
                     isLoading = false,
-                    isError = false,
+                    isError = !this.isSuccess,
                     errorMessage = this.response.message(),
                     data = this.data.data
                 )
@@ -75,12 +83,28 @@ class HomeRepository constructor(
             emit(
                 HomeUiState(
                     isLoading = false,
-                    isError = true,
+                    isError = this.isError,
                     errorMessage = errorMessage
                 )
             )
+        }.suspendOnFailure {
+            emit(
+                HomeUiState(
+                    isLoading = false,
+                    isError = this.isFailure,
+                    errorMessage = this.message()
+                )
+            )
+        }.suspendOnException {
+            emit(
+                HomeUiState(
+                    isLoading = false,
+                    isError = this.isException,
+                    errorMessage = this.message()
+                )
+            )
         }
-    }.flowOn(Dispatchers.IO)
+    }.onStart { emit(HomeUiState(isLoading = true)) }.flowOn(Dispatchers.IO)
 
     @WorkerThread
     fun getAnimeTopMostPopular(): Flow<HomeUiState> = flow {

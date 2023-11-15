@@ -2,17 +2,28 @@
 
 package com.aniiki.features.home.ui
 
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
@@ -28,14 +39,21 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.consumeAllChanges
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -45,16 +63,22 @@ import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.glide.GlideImage
 import com.syakirarif.aniiki.apiservice.response.anime.AnimeResponse
 import com.syakirarif.aniiki.compose.fadingEdge
+import com.syakirarif.aniiki.compose.pagerFadeTransition
 import com.syakirarif.aniiki.compose.spacer
 import com.syakirarif.aniiki.compose.theme.md_theme_dark_surface
 import com.syakirarif.aniiki.compose.theme.md_theme_light_surface
 import com.syakirarif.aniiki.core.utils.orNullEmpty
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import timber.log.Timber
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
+@ExperimentalCoroutinesApi
 @Composable
 fun DetailMainScreen(detailViewModel: DetailViewModel, onBackPressed: () -> Unit) {
+
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -170,6 +194,8 @@ fun DetailMainScreen2(
     val animePictures by detailViewModel.animePictures2
         .collectAsState()
 
+//    val animeId by detailViewModel.animeId.collectAsState()
+
 //    detailViewModel.getAnimePictures(anime.malId.orNullEmpty())
 
     val posterSize = 600
@@ -184,13 +210,39 @@ fun DetailMainScreen2(
 
     val bgColor = if (isInDarkTheme) md_theme_dark_surface else md_theme_light_surface
 
-    LaunchedEffect(key1 = animePictures) {
-        Timber.e("animePictures | isLoading => ${animePictures.isLoading}")
-        Timber.e("animePictures | isError => ${animePictures.isError}")
+    SideEffect {
 
-        if (!animePictures.isLoading) {
-            Timber.e("animePictures | data => ${animePictures.dataPictures.size}")
+    }
+
+    val animeId = rememberSaveable { anime.malId.orNullEmpty() }
+
+    LaunchedEffect(key1 = animeId) {
+        detailViewModel.getAnimePictures4(animeId)
+//        Timber.e("animePictures | isLoading => ${animePictures.isLoading}")
+//        Timber.e("animePictures | isError => ${animePictures.isError}")
+//
+//        if (!animePictures.isLoading) {
+//            Timber.e("animePictures | data => ${animePictures.dataPictures.size}")
+//        }
+    }
+
+    val banner: MutableList<String> = mutableListOf()
+    var bannerSet: Set<String> = mutableSetOf()
+
+    if (!animePictures.isLoading) {
+        if (animePictures.dataPictures.isNotEmpty()) {
+            animePictures.dataPictures.forEach {
+                banner.add(it.jpg.largeImageUrl)
+            }
         }
+    } else {
+        banner.add(anime.images.jpg.largeImageUrl)
+    }
+
+    bannerSet = banner.toSet()
+    banner.clear()
+    bannerSet.forEach {
+        banner.add(it)
     }
 
 //    Timber.e("animePictures | data => ${animePictures.size}")
@@ -204,19 +256,28 @@ fun DetailMainScreen2(
         Box(
             Modifier.align(Alignment.TopCenter)
         ) {
-            GlideImage(
-                imageModel = { anime.images.webp.largeImageUrl },
-                imageOptions = ImageOptions(
-                    contentScale = ContentScale.Crop
-                ),
-                loading = { LoadingScreen() },
-                modifier = Modifier
-                    //                .fillMaxSize()
+//            if (banner.isNotEmpty()) {
+            DetailAnimePosterSlider(
+                data = banner, modifier = Modifier
                     .height(posterSize.dp)
-                    //                .fillMaxHeight()
-                    .fillMaxWidth()
-                    .align(Alignment.TopCenter),
+                    .align(
+                        Alignment.TopCenter
+                    )
             )
+//            } else
+//                GlideImage(
+//                    imageModel = { anime.images.webp.largeImageUrl },
+//                    imageOptions = ImageOptions(
+//                        contentScale = ContentScale.Crop
+//                    ),
+//                    loading = { LoadingScreen() },
+//                    modifier = Modifier
+//                        //                .fillMaxSize()
+//                        .height(posterSize.dp)
+//                        //                .fillMaxHeight()
+//                        .fillMaxWidth()
+//                        .align(Alignment.TopCenter),
+//                )
             Box(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
@@ -225,13 +286,17 @@ fun DetailMainScreen2(
                     .fadingEdge(topFade)
                     .background(
                         brush = Brush.verticalGradient(
-                            colors = if (isInDarkTheme) listOf(
+                            colors = listOf(
                                 md_theme_dark_surface.copy(alpha = 0.5f),
                                 md_theme_dark_surface
-                            ) else listOf(
-                                md_theme_light_surface.copy(alpha = 0.5f),
-                                md_theme_light_surface
                             )
+//                            colors = if (isInDarkTheme) listOf(
+//                                md_theme_dark_surface.copy(alpha = 0.5f),
+//                                md_theme_dark_surface
+//                            ) else listOf(
+//                                md_theme_light_surface.copy(alpha = 0.5f),
+//                                md_theme_light_surface
+//                            )
                         )
                     )
                     .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 8.dp)
@@ -244,7 +309,7 @@ fun DetailMainScreen2(
                 .background(color = Color.Transparent)
         ) {
             item {
-                (posterSize - 100).spacer()
+                (posterSize - 50).spacer()
                 Column(
                     Modifier
                         .fillMaxSize()
@@ -401,4 +466,141 @@ fun ItemDetail(title: String, value: String) {
             style = MaterialTheme.typography.bodyLarge
         )
     }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun DetailAnimePosterSlider(modifier: Modifier = Modifier, data: List<String>) {
+
+    val isInDarkTheme = isSystemInDarkTheme()
+
+    val pageState = rememberPagerState { data.size }
+    val heightSize = WindowInsets.systemBars.asPaddingValues()
+    var finishSwipe by remember { mutableStateOf(false) }
+
+    val coroutineScope = CoroutineScope(Dispatchers.Main)
+
+//    var visibility by remember { mutableStateOf(false) }
+
+    val visibility = remember {
+        MutableTransitionState(false).apply {
+            // Start the animation immediately.
+            targetState = true
+        }
+    }
+
+    LaunchedEffect(key1 = finishSwipe) {
+        launch {
+            delay(3000)
+            with(pageState) {
+//                val target = if (currentPage < pageCount - 1) currentPage + 1 else 0
+                var newPosition = pageState.currentPage + 1
+                if (newPosition > data.lastIndex) newPosition = 0
+
+//                visibility = false
+                visibility.targetState = false
+
+                animateScrollToPage(
+                    page = newPosition,
+                    animationSpec = tween(
+                        durationMillis = 1000,
+                        easing = FastOutSlowInEasing
+                    )
+                )
+
+                finishSwipe = !finishSwipe
+//                visibility = true
+                visibility.targetState = true
+            }
+        }
+    }
+
+    val topFade = Brush.verticalGradient(0f to Color.Transparent, 0.3f to Color.Red)
+    val topBottomFade = Brush.verticalGradient(
+        0f to Color.Transparent,
+        0.3f to Color.Red,
+        0.7f to Color.Red,
+        1f to Color.Transparent
+    )
+//    Box(modifier = Modifier.fillMaxSize()) {
+    HorizontalPager(
+        state = pageState,
+        modifier = modifier
+            .fillMaxWidth()
+            .pointerInput(Unit) {
+                detectHorizontalDragGestures { change, dragAmount ->
+                    change.consumeAllChanges()
+                    when {
+                        dragAmount < 0 -> {
+                            coroutineScope.launch { /* right */
+                                if (pageState.currentPage == data.lastIndex) {
+                                    pageState.animateScrollToPage(0)
+                                } else {
+                                    pageState.animateScrollToPage(pageState.currentPage + 1)
+                                }
+                            }
+                        }
+
+                        dragAmount > 0 -> { /* left */
+                            coroutineScope.launch {
+                                if (pageState.currentPage == 0) {
+                                    pageState.animateScrollToPage(data.lastIndex)
+                                } else {
+                                    pageState.animateScrollToPage(pageState.currentPage - 1)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+    )
+    { page ->
+        GlideImage(
+            imageModel = { data[page] },
+            imageOptions = ImageOptions(
+                contentScale = ContentScale.Crop,
+//                alignment = remember(pageState) {
+//                    ParallaxAlignment(
+//                        horizontalBias = {
+//                            val adjustedOffset =
+//                                pageState.currentPageOffsetFraction - pageState.initialPageOffsetFraction
+//                            (adjustedOffset / pageState.pageCount.toFloat()).coerceIn(
+//                                -1f,
+//                                1f
+//                            )
+//                        }
+//                    )
+//                }
+            ),
+            loading = { LoadingScreen() },
+            modifier = modifier
+                .fillMaxWidth()
+                .pagerFadeTransition(page = page, pagerState = pageState)
+                .clickable {
+
+                }
+        )
+    }
+//        Box(
+//            Modifier
+//                .align(Alignment.BottomCenter)
+//                .defaultMinSize(minHeight = 120.dp)
+//                .fillMaxHeight()
+//                .fillMaxWidth()
+//                .fadingEdge(topFade)
+//                .background(
+//                    brush = Brush.verticalGradient(
+//                        colors = if (isInDarkTheme) listOf(
+//                            md_theme_dark_surface.copy(alpha = 0.5f),
+//                            md_theme_dark_surface
+//                        ) else listOf(
+//                            md_theme_light_surface.copy(alpha = 0.5f),
+//                            md_theme_light_surface
+//                        )
+//                    )
+//                )
+//                .padding(start = 16.dp, end = 16.dp, top = 32.dp, bottom = 8.dp)
+//
+//        )
+//    }
 }

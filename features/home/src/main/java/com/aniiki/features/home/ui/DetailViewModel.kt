@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@ExperimentalCoroutinesApi
 @HiltViewModel
 class DetailViewModel @Inject constructor(
     private val detailRepository: DetailRepository
@@ -37,6 +38,7 @@ class DetailViewModel @Inject constructor(
     //    var animeId = "0"
 //    private val animeId = animeResponse.value.malId.orNullEmpty()
     val animeId = MutableStateFlow("")
+    val animeIdEffect = MutableStateFlow(false)
 
     fun setAnimeResponse(animeResponse: AnimeResponse?) {
         _animeResponse.value = animeResponse ?: AnimeResponse()
@@ -51,19 +53,22 @@ class DetailViewModel @Inject constructor(
         ).value
     }
 
-    @ExperimentalCoroutinesApi
-    fun getAnimePictures4() {
+    fun getAnimePictures4(malId: String) {
         viewModelScope.launch {
-            animeId.flatMapLatest { anime ->
-                detailRepository.getAnimePictures(anime)
-            }.collectLatest {
-                _animePictures2.value = it
-            }
+//            animeId.flatMapLatest { animeId ->
+//                detailRepository.getAnimePictures(animeId = animeId)
+//            }.collectLatest {
+//                _animePictures2.value = it
+//                animeIdEffect.value = !animeIdEffect.value
+//            }
+            detailRepository.getAnimePictures(animeId = malId)
+                .collectLatest {
+                    _animePictures2.value = it
+                    animeIdEffect.value = !animeIdEffect.value
+                }
         }
-
     }
 
-    @ExperimentalCoroutinesApi
     val getAnimePictures5: StateFlow<DetailUiState> =
         animeResponse.flatMapLatest { anime ->
             detailRepository.getAnimePictures(animeId = anime.malId.orNullEmpty())
@@ -73,9 +78,9 @@ class DetailViewModel @Inject constructor(
             initialValue = DetailUiState(isLoading = true)
         )
 
-    init {
-        getAnimePictures4()
-    }
+//    init {
+//        getAnimePictures4()
+//    }
 
 
 }

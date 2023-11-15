@@ -2,7 +2,12 @@ package com.aniiki.features.home.repository
 
 import androidx.annotation.WorkerThread
 import com.aniiki.features.home.ui.state.DetailUiState
+import com.skydoves.sandwich.isError
+import com.skydoves.sandwich.isException
+import com.skydoves.sandwich.isFailure
+import com.skydoves.sandwich.isSuccess
 import com.skydoves.sandwich.message
+import com.skydoves.sandwich.messageOrNull
 import com.skydoves.sandwich.suspendOnError
 import com.skydoves.sandwich.suspendOnException
 import com.skydoves.sandwich.suspendOnFailure
@@ -12,12 +17,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.onStart
 import org.json.JSONObject
 
 class DetailRepository constructor(
     private val animeEndpoints: AnimeEndpoints
 ) {
-    //    @WorkerThread
+    @WorkerThread
     fun getAnimePictures(animeId: String): Flow<DetailUiState> = flow {
 
         val response = animeEndpoints.getAnimePictures(animeId = animeId)
@@ -26,43 +32,40 @@ class DetailRepository constructor(
             emit(
                 DetailUiState(
                     isLoading = false,
-                    isError = false,
-                    errorMessage = this.response.message(),
+                    isError = !this.isSuccess,
+                    errorMessage = this.messageOrNull ?: "",
                     dataPictures = this.data.data ?: mutableListOf()
                 )
             )
+        }.suspendOnError {
+            val jsonObject = JSONObject(this.toString())
+            val errorMessage = jsonObject.getString("message")
+            emit(
+                DetailUiState(
+                    isLoading = false,
+                    isError = this.isError,
+                    errorMessage = errorMessage
+                )
+            )
+        }.suspendOnException {
+            emit(
+                DetailUiState(
+                    isLoading = false,
+                    isError = this.isException,
+                    errorMessage = this.message()
+                )
+            )
+        }.suspendOnFailure {
+            emit(
+                DetailUiState(
+                    isLoading = false,
+                    isError = this.isFailure,
+                    errorMessage = this.message()
+                )
+            )
         }
-            .suspendOnError {
-                val jsonObject = JSONObject(this.toString())
-                val errorMessage = jsonObject.getString("message")
-                emit(
-                    DetailUiState(
-                        isLoading = false,
-                        isError = true,
-                        errorMessage = errorMessage
-                    )
-                )
-            }
-            .suspendOnException {
-                emit(
-                    DetailUiState(
-                        isLoading = false,
-                        isError = true,
-                        errorMessage = this.message()
-                    )
-                )
-            }
-            .suspendOnFailure {
-                emit(
-                    DetailUiState(
-                        isLoading = false,
-                        isError = true,
-                        errorMessage = this.message()
-                    )
-                )
-            }
 
-    }.flowOn(Dispatchers.IO)
+    }.onStart { emit(DetailUiState(isLoading = true)) }.flowOn(Dispatchers.IO)
 
     @WorkerThread
     fun getAnimeCharacters(animeId: String): Flow<DetailUiState> = flow {
