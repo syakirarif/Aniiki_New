@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -68,7 +69,6 @@ import com.syakirarif.aniiki.apiservice.response.anime.AnimeResponse
 import com.syakirarif.aniiki.apiservice.response.anime.childs.Character
 import com.syakirarif.aniiki.compose.fadingEdge
 import com.syakirarif.aniiki.compose.pagerFadeTransition
-import com.syakirarif.aniiki.compose.radius
 import com.syakirarif.aniiki.compose.spacer
 import com.syakirarif.aniiki.compose.theme.md_theme_dark_surface
 import com.syakirarif.aniiki.compose.theme.md_theme_light_surface
@@ -373,90 +373,15 @@ fun DetailMainScreen2(
 //                        Timber.e("animeCharacters | items: ${animeCharacters.size}")
                         items(animeCharacters) { item ->
                             if (item.voiceActors.isNotEmpty())
-                                CharacterComponent(item = item)
+                                CharacterComponent(
+                                    item = item
+                                )
                         }
                     }
                     80.spacer()
                 }
             }
         }
-
-//        Column(
-//        ) {
-//            TopAppBar(
-//                colors = TopAppBarDefaults.topAppBarColors(
-//                    containerColor = Color.Transparent.copy(
-//                        alpha = 0.3f
-//                    )
-//                ),
-//                title = {
-//                    Text(
-//                        anime.title.orNullEmpty(),
-//                        style = MaterialTheme.typography.titleLarge,
-//                        color = Color.White
-//                    )
-//                },
-//                navigationIcon = {
-//                    IconButton(onClick = { onBackPressed() })
-//                    {
-//                        Icon(
-//                            imageVector = Icons.Filled.ArrowBack,
-//                            contentDescription = null,
-//                            modifier = Modifier.padding(horizontal = 8.dp),
-//                            tint = Color.White
-//                        )
-//                    }
-//                },
-////                    colors = TopAppBarDefaults.topAppBarColors()
-////                backgroundColor = MaterialTheme.colorScheme.background,
-////                contentColor = MaterialTheme.colorScheme.background,
-////                elevation = 0.dp
-//            )
-//            Box(
-//                contentAlignment = Alignment.BottomCenter,
-//                modifier = Modifier.background(
-//                    color = Color.Transparent
-//                )
-//            ) {
-//
-////                itemsIndexed(
-////                    eduSubjectDetailsData
-////                ) { i, item ->
-////                    EduSubjectDetailListComponent(item, i)
-////                }
-//                }
-//                Button(
-//                    onClick = {
-////                    navController.navigate(EduScreenRoutes.SubjectDetailDescriptionScreen.routes)
-//                    },
-//                    shape = 24.radius(),
-//                    elevation = ButtonDefaults.buttonElevation(),
-//                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-//                    enabled = true,
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .height(80.dp)
-//                        .background(Color.White)
-//                        .padding(
-//                            start = 32.dp,
-//                            end = 32.dp,
-//                            top = 16.dp,
-//                            bottom = 16.dp
-//                        )
-//                ) {
-//                    Text(
-//                        modifier = Modifier.padding(
-//                            start = 16.dp,
-//                            top = 4.dp,
-//                            bottom = 4.dp,
-//                            end = 16.dp
-//                        ),
-//                        text = "Continue",
-//                        style = MaterialTheme.typography.titleMedium
-//                    )
-//                }
-//            }
-//        }
     }
 }
 
@@ -634,29 +559,30 @@ fun DetailAnimePosterSlider(modifier: Modifier = Modifier, data: List<String>) {
 }
 
 @Composable
-fun CharacterComponent(item: Character) {
+fun CharacterComponent(item: Character, modifier: Modifier = Modifier) {
 //    val liked = remember { mutableStateOf(item.favourite) }
     Box(
         contentAlignment = Alignment.BottomStart,
-        modifier = Modifier
+        modifier = modifier
+            .width(205.dp)
             .height(265.dp)
-            .fillMaxWidth()
-            .background(Color.Black.copy(alpha = 0.5F))
             .padding(16.dp)
     ) {
         GlideImage(
             imageModel = { item.character.images.jpg.imageUrl },
             modifier = Modifier
-                .clip(16.radius())
-                .fillMaxSize()
+                .clip(RoundedCornerShape(16.dp))
+                .fillMaxWidth(),
+            loading = { LoadingScreen() },
         )
         Box(
             modifier = Modifier
-                .padding(10.dp)
 //                .clip(CircleShape)
 //                .background(Color.Black.copy(alpha = 0.5F))
 //                .size(28.dp)
                 .fillMaxWidth()
+                .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+                .background(color = Color.Black.copy(alpha = 0.5f))
                 .align(Alignment.TopStart)
                 .clickable {
 //                    liked.value = !liked.value
@@ -675,7 +601,7 @@ fun CharacterComponent(item: Character) {
 //                    .padding(6.dp)
 //            )
             Column(
-                modifier = Modifier.background(Color.Black.copy(alpha = 0.5F)),
+                modifier = Modifier.padding(10.dp),
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
@@ -693,9 +619,10 @@ fun CharacterComponent(item: Character) {
 
         Row(
             modifier = Modifier
-                .padding(10.dp, 0.dp, 10.dp, 16.dp)
                 .fillMaxWidth()
-                .background(Color.Black.copy(alpha = 0.5F)),
+                .clip(RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp))
+                .background(color = Color.Black.copy(alpha = 0.5f))
+                .padding(10.dp, 10.dp, 10.dp, 16.dp),
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.Bottom
         ) {
@@ -717,7 +644,7 @@ fun CharacterComponent(item: Character) {
                     color = Color.White
                 )
                 Text(
-                    item.voiceActors[0].language,
+                    item.voiceActors[0].language + " VA",
                     style = MaterialTheme.typography.labelMedium,
                     color = Color.White.copy(alpha = 0.7F)
                 )
