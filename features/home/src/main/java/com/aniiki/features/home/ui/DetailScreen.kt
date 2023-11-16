@@ -48,6 +48,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.mapSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -189,7 +190,7 @@ fun DetailMainScreen2(
     }
 
 
-    val anime by detailViewModel.animeResponse.collectAsState()
+    val animeResponse by detailViewModel.animeResponse.collectAsState()
 
 //    detailViewModel.animeId = anime.malId.orNullEmpty()
 //    detailViewModel.getAnimePictures4(anime.malId.orNullEmpty())
@@ -217,7 +218,21 @@ fun DetailMainScreen2(
 
     val bgColor = if (isInDarkTheme) md_theme_dark_surface else md_theme_light_surface
 
-    val animeId = rememberSaveable { anime.malId.orNullEmpty() }
+    val AnimeSaver = run {
+        val animeId = ""
+
+        mapSaver(
+            save = { mapOf(animeId to it.malId) },
+            restore = { AnimeResponse(malId = it[animeId] as Int) }
+        )
+    }
+
+    val animeSaveable = rememberSaveable {
+        mutableStateOf(animeResponse)
+    }
+
+    val anime = animeSaveable.value
+    val animeId = anime.malId.orNullEmpty()
 
     LaunchedEffect(key1 = animeId) {
         detailViewModel.getAnimePictures4(animeId)
@@ -606,12 +621,12 @@ fun CharacterComponent(item: Character, modifier: Modifier = Modifier) {
             ) {
                 Text(
                     item.character.name,
-                    style = MaterialTheme.typography.labelLarge,
+                    style = MaterialTheme.typography.titleMedium,
                     color = Color.White
                 )
                 Text(
                     item.role,
-                    style = MaterialTheme.typography.labelMedium,
+                    style = MaterialTheme.typography.titleSmall,
                     color = Color.White.copy(alpha = 0.7F)
                 )
             }

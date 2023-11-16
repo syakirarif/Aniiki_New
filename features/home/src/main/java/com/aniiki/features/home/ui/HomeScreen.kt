@@ -101,12 +101,14 @@ import com.syakirarif.aniiki.core.utils.getCurrentAnimeSeason
 import com.syakirarif.aniiki.core.utils.getCurrentYear
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import timber.log.Timber
 import java.io.IOException
 
+@ExperimentalCoroutinesApi
 @Composable
 fun HomeScreenApp(
     homeViewModel: HomeViewModel,
