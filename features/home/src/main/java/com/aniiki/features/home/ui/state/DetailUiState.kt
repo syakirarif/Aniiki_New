@@ -7,6 +7,6 @@ data class DetailUiState(
     val isLoading: Boolean = false,
     val isError: Boolean = false,
     val errorMessage: String = "",
-    val dataPictures: List<Images> = mutableListOf(),
-    val dataCharacters: List<Character> = mutableListOf(),
+    val dataPictures: List<Images> = mutableListOf(Images()),
+    val dataCharacters: List<Character> = mutableListOf(Character()),
 )

@@ -2,14 +2,12 @@ package com.aniiki.features.home.repository
 
 import androidx.annotation.WorkerThread
 import androidx.paging.PagingData
+import com.aniiki.features.home.repository.utils.unsuccessfulHomeUiState
 import com.aniiki.features.home.ui.state.HomeUiState
-import com.skydoves.sandwich.isError
-import com.skydoves.sandwich.isException
-import com.skydoves.sandwich.isFailure
 import com.skydoves.sandwich.isSuccess
 import com.skydoves.sandwich.message
+import com.skydoves.sandwich.messageOrNull
 import com.skydoves.sandwich.suspendOnError
-import com.skydoves.sandwich.suspendOnException
 import com.skydoves.sandwich.suspendOnFailure
 import com.skydoves.sandwich.suspendOnSuccess
 import com.syakirarif.aniiki.apiservice.api.AnimeEndpoints
@@ -22,7 +20,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onStart
-import org.json.JSONObject
 
 class HomeRepository constructor(
     private val animeEndpoints: AnimeEndpoints
@@ -45,20 +42,18 @@ class HomeRepository constructor(
             emit(
                 HomeUiState(
                     isLoading = false,
-                    isError = false,
-                    errorMessage = this.response.message(),
+                    isError = !this.isSuccess,
+                    errorMessage = this.messageOrNull ?: "",
                     data = this.data.data
                 )
             )
         }.suspendOnError {
-            val jsonObject = JSONObject(this.toString())
-            val errorMessage = jsonObject.getString("message")
             emit(
-                HomeUiState(
-                    isLoading = false,
-                    isError = true,
-                    errorMessage = errorMessage
-                )
+                unsuccessfulHomeUiState(message = this.message())
+            )
+        }.suspendOnFailure {
+            emit(
+                unsuccessfulHomeUiState(message = this.message())
             )
         }
     }.flowOn(Dispatchers.IO)
@@ -78,30 +73,12 @@ class HomeRepository constructor(
                 )
             )
         }.suspendOnError {
-            val jsonObject = JSONObject(this.toString())
-            val errorMessage = jsonObject.getString("message")
             emit(
-                HomeUiState(
-                    isLoading = false,
-                    isError = this.isError,
-                    errorMessage = errorMessage
-                )
+                unsuccessfulHomeUiState(message = this.message())
             )
         }.suspendOnFailure {
             emit(
-                HomeUiState(
-                    isLoading = false,
-                    isError = this.isFailure,
-                    errorMessage = this.message()
-                )
-            )
-        }.suspendOnException {
-            emit(
-                HomeUiState(
-                    isLoading = false,
-                    isError = this.isException,
-                    errorMessage = this.message()
-                )
+                unsuccessfulHomeUiState(message = this.message())
             )
         }
     }.onStart { emit(HomeUiState(isLoading = true)) }.flowOn(Dispatchers.IO)
@@ -113,22 +90,22 @@ class HomeRepository constructor(
             emit(
                 HomeUiState(
                     isLoading = false,
-                    isError = false,
-                    errorMessage = this.response.message(),
+                    isError = !this.isSuccess,
+                    errorMessage = this.messageOrNull ?: "",
                     data = this.data.data
                 )
             )
         }.suspendOnError {
-            val jsonObject = JSONObject(this.toString())
-            val errorMessage = jsonObject.getString("message")
+//            val jsonObject = JSONObject(this.toString())
+//            val errorMessage = jsonObject.getString("message")
             emit(
-                HomeUiState(
-                    isLoading = false,
-                    isError = true,
-                    errorMessage = errorMessage
-                )
+                unsuccessfulHomeUiState(message = this.message())
+            )
+        }.suspendOnFailure {
+            emit(
+                unsuccessfulHomeUiState(message = this.message())
             )
         }
-    }.flowOn(Dispatchers.IO)
+    }.onStart { emit(HomeUiState(isLoading = true)) }.flowOn(Dispatchers.IO)
 
 }

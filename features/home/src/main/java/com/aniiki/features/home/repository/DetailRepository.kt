@@ -1,15 +1,12 @@
 package com.aniiki.features.home.repository
 
 import androidx.annotation.WorkerThread
+import com.aniiki.features.home.repository.utils.unsuccessfulDetailUiState
 import com.aniiki.features.home.ui.state.DetailUiState
-import com.skydoves.sandwich.isError
-import com.skydoves.sandwich.isException
-import com.skydoves.sandwich.isFailure
 import com.skydoves.sandwich.isSuccess
 import com.skydoves.sandwich.message
 import com.skydoves.sandwich.messageOrNull
 import com.skydoves.sandwich.suspendOnError
-import com.skydoves.sandwich.suspendOnException
 import com.skydoves.sandwich.suspendOnFailure
 import com.skydoves.sandwich.suspendOnSuccess
 import com.syakirarif.aniiki.apiservice.api.AnimeEndpoints
@@ -41,27 +38,11 @@ class DetailRepository constructor(
 //            val jsonObject = JSONObject(this.toString())
 //            val errorMessage = jsonObject.getString("message")
             emit(
-                DetailUiState(
-                    isLoading = false,
-                    isError = this.isError,
-                    errorMessage = this.message()
-                )
-            )
-        }.suspendOnException {
-            emit(
-                DetailUiState(
-                    isLoading = false,
-                    isError = this.isException,
-                    errorMessage = this.message()
-                )
+                unsuccessfulDetailUiState(message = this.message())
             )
         }.suspendOnFailure {
             emit(
-                DetailUiState(
-                    isLoading = false,
-                    isError = this.isFailure,
-                    errorMessage = this.message()
-                )
+                unsuccessfulDetailUiState(message = this.message())
             )
         }
 
@@ -81,35 +62,19 @@ class DetailRepository constructor(
                     errorMessage = this.messageOrNull ?: "",
                     dataCharacters = this.data.data ?: mutableListOf()
                 )
+
             )
         }.suspendOnError {
             Timber.e("DetailRepository | getAnimeCharacters | onError | msg: ${this.message()}")
 //            val jsonObject = JSONObject(this.toString())
 //            val errorMessage = jsonObject.getString("message")
             emit(
-                DetailUiState(
-                    isLoading = false,
-                    isError = this.isError,
-                    errorMessage = this.message()
-                )
+                unsuccessfulDetailUiState(message = this.message())
             )
         }.suspendOnFailure {
             Timber.e("DetailRepository | getAnimeCharacters | onFailure | msg: ${this.message()}")
             emit(
-                DetailUiState(
-                    isLoading = false,
-                    isError = this.isFailure,
-                    errorMessage = this.message()
-                )
-            )
-        }.suspendOnException {
-            Timber.e("DetailRepository | getAnimeCharacters | onException | msg: ${this.message()}")
-            emit(
-                DetailUiState(
-                    isLoading = false,
-                    isError = this.isException,
-                    errorMessage = this.message()
-                )
+                unsuccessfulDetailUiState(message = this.message())
             )
         }
 

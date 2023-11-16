@@ -2,8 +2,13 @@ package com.aniiki.features.home.repository
 
 import androidx.annotation.WorkerThread
 import androidx.paging.PagingData
+import com.aniiki.features.home.repository.utils.unsuccessfulHomeUiState
 import com.aniiki.features.home.ui.state.HomeUiState
+import com.skydoves.sandwich.isSuccess
+import com.skydoves.sandwich.message
+import com.skydoves.sandwich.messageOrNull
 import com.skydoves.sandwich.suspendOnError
+import com.skydoves.sandwich.suspendOnFailure
 import com.skydoves.sandwich.suspendOnSuccess
 import com.syakirarif.aniiki.apiservice.api.AnimeEndpoints
 import com.syakirarif.aniiki.apiservice.response.anime.AnimeResponse
@@ -13,7 +18,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import org.json.JSONObject
 
 class ScheduleRepository constructor(
     private val animeEndpoints: AnimeEndpoints
@@ -37,20 +41,18 @@ class ScheduleRepository constructor(
             emit(
                 HomeUiState(
                     isLoading = false,
-                    isError = false,
-                    errorMessage = this.response.message(),
+                    isError = !this.isSuccess,
+                    errorMessage = this.messageOrNull ?: "",
                     data = this.data.data
                 )
             )
         }.suspendOnError {
-            val jsonObject = JSONObject(this.toString())
-            val errorMessage = jsonObject.getString("message")
             emit(
-                HomeUiState(
-                    isLoading = false,
-                    isError = true,
-                    errorMessage = errorMessage
-                )
+                unsuccessfulHomeUiState(message = this.message())
+            )
+        }.suspendOnFailure {
+            emit(
+                unsuccessfulHomeUiState(message = this.message())
             )
         }
     }.flowOn(Dispatchers.IO)

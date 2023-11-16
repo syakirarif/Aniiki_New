@@ -5,13 +5,14 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.skydoves.sandwich.ApiResponse
+import com.skydoves.sandwich.message
 import com.skydoves.sandwich.onError
+import com.skydoves.sandwich.onFailure
 import com.skydoves.sandwich.onSuccess
 import com.syakirarif.aniiki.apiservice.api.DEFAULT_PAGE_SIZE
 import com.syakirarif.aniiki.apiservice.api.JikanBaseResponse
 import com.syakirarif.aniiki.apiservice.response.anime.AnimeResponse
 import com.syakirarif.aniiki.apiservice.response.pagination.PaginationResponse
-import org.json.JSONObject
 
 class BasePagingSource(
 //    private val totalPages: Int? = null,
@@ -34,9 +35,11 @@ class BasePagingSource(
                 totalPages = pagination?.lastVisiblePage
                 hasNextPage = pagination?.hasNextPage
             }.onError {
-                val jsonObject = JSONObject(this.toString())
-                val errorMessage = jsonObject.getString("message")
-                onError(errorMessage)
+//                val jsonObject = JSONObject(this.toString())
+//                val errorMessage = jsonObject.getString("message")
+                onError(this.message())
+            }.onFailure {
+                onError(this.message())
             }
 
             val nextKey = if (animes.isEmpty()) {
