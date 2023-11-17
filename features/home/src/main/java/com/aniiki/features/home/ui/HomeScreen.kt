@@ -31,6 +31,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -238,7 +239,7 @@ fun HomeMainScreen(
         ) {
             item {
                 if (!animeTopAiring.isLoading) {
-                    HomeAnimePosterSlider(data = banner)
+                    HomeAnimePosterSlider(data = banner, onItemClicked = onItemClicked)
                 }
                 HomeAnimeHeading(
                     title = "$season Anime", modifier = Modifier.padding(
@@ -274,7 +275,11 @@ fun HomeMainScreen(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun HomeAnimePosterSlider(modifier: Modifier = Modifier, data: List<AnimeResponse>) {
+fun HomeAnimePosterSlider(
+    modifier: Modifier = Modifier,
+    data: List<AnimeResponse>,
+    onItemClicked: (AnimeResponse?) -> Unit
+) {
 
     val isInDarkTheme = isSystemInDarkTheme()
 
@@ -382,7 +387,7 @@ fun HomeAnimePosterSlider(modifier: Modifier = Modifier, data: List<AnimeRespons
                     .height(480.dp)
                     .pagerFadeTransition(page = page, pagerState = pageState)
                     .clickable {
-
+                        onItemClicked(data[page])
                     }
             )
         }
@@ -721,13 +726,16 @@ fun AnimeContent(
                     style = MaterialTheme.typography.titleSmall,
                     color = Color.White,
                     maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
+                    minLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.wrapContentHeight(align = Alignment.CenterVertically)
                 )
                 Text(
                     text = titleJapanese,
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.White,
                     maxLines = 1,
+                    minLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
             }

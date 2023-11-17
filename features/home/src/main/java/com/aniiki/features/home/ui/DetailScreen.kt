@@ -49,7 +49,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.mapSaver
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -190,7 +189,7 @@ fun DetailMainScreen2(
     }
 
 
-    val animeResponse by detailViewModel.animeResponse.collectAsState()
+    val anime by detailViewModel.animeResponse.collectAsState()
 
 //    detailViewModel.animeId = anime.malId.orNullEmpty()
 //    detailViewModel.getAnimePictures4(anime.malId.orNullEmpty())
@@ -227,11 +226,11 @@ fun DetailMainScreen2(
         )
     }
 
-    val animeSaveable = rememberSaveable {
-        mutableStateOf(animeResponse)
-    }
+//    val animeSaveable = rememberSaveable {
+//        mutableStateOf(animeResponse)
+//    }
 
-    val anime = animeSaveable.value
+//    val anime = animeSaveable.value
     val animeId = anime.malId.orNullEmpty()
 
     LaunchedEffect(key1 = animeId) {
@@ -353,10 +352,19 @@ fun DetailMainScreen2(
                         modifier = Modifier
                             .padding(horizontal = 16.dp),
                     )
-
                     20.spacer()
                     Text(
-                        text = "Subject Details",
+                        text = "Genre",
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = textColor,
+                        modifier = Modifier
+                            .padding(start = 16.dp)
+                    )
+                    20.spacer()
+                    GenreSection(anime = anime, modifier = Modifier.padding(start = 16.dp))
+                    20.spacer()
+                    Text(
+                        text = "Details",
                         style = MaterialTheme.typography.headlineSmall,
                         color = textColor,
                         modifier = Modifier
@@ -398,6 +406,23 @@ fun DetailMainScreen2(
             }
         }
     }
+}
+
+@Composable
+fun GenreSection(anime: AnimeResponse, modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        anime.genres.forEach { item ->
+            Text(
+                text = item.name,
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.padding(end = 8.dp)
+            )
+        }
+    }
+
 }
 
 @Composable
@@ -597,7 +622,7 @@ fun CharacterComponent(item: Character, modifier: Modifier = Modifier) {
 //                .size(28.dp)
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
-                .background(color = Color.Black.copy(alpha = 0.5f))
+                .background(color = Color.Black.copy(alpha = 0.4f))
                 .align(Alignment.TopStart)
                 .clickable {
 //                    liked.value = !liked.value
@@ -636,7 +661,7 @@ fun CharacterComponent(item: Character, modifier: Modifier = Modifier) {
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp))
-                .background(color = Color.Black.copy(alpha = 0.5f))
+                .background(color = Color.Black.copy(alpha = 0.4f))
                 .padding(10.dp, 10.dp, 10.dp, 16.dp),
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.Bottom
