@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
@@ -335,6 +336,20 @@ fun DetailMainScreen2(
                         .background(color = bgColor)
                 ) {
                     20.spacer()
+                    Box(
+                        Modifier
+                            .fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Box(
+                            Modifier
+                                .width(40.dp)
+                                .height(8.dp)
+                                .clip(CircleShape)
+                                .background(Color.LightGray.copy(alpha = 0.5f))
+                        ) {}
+                    }
+                    20.spacer()
                     Text(
                         text = anime.title.orNullEmpty(),
                         style = MaterialTheme.typography.headlineLarge.copy(
@@ -342,7 +357,7 @@ fun DetailMainScreen2(
                         ),
                         color = textColor,
                         modifier = Modifier
-                            .padding(start = 16.dp),
+                            .padding(horizontal = 16.dp),
                     )
                     10.spacer()
                     Text(
@@ -358,17 +373,17 @@ fun DetailMainScreen2(
                         style = MaterialTheme.typography.headlineSmall,
                         color = textColor,
                         modifier = Modifier
-                            .padding(start = 16.dp)
+                            .padding(horizontal = 16.dp)
                     )
                     20.spacer()
                     GenreSection(anime = anime, modifier = Modifier.padding(start = 16.dp))
                     20.spacer()
                     Text(
-                        text = "Details",
+                        text = "Information",
                         style = MaterialTheme.typography.headlineSmall,
                         color = textColor,
                         modifier = Modifier
-                            .padding(start = 16.dp)
+                            .padding(horizontal = 16.dp)
                     )
                     20.spacer()
                     TableDetails(
@@ -381,7 +396,7 @@ fun DetailMainScreen2(
                         style = MaterialTheme.typography.headlineSmall,
                         color = textColor,
                         modifier = Modifier
-                            .padding(start = 16.dp)
+                            .padding(horizontal = 16.dp)
                     )
                     20.spacer()
                     LazyRow(
@@ -410,16 +425,28 @@ fun DetailMainScreen2(
 
 @Composable
 fun GenreSection(anime: AnimeResponse, modifier: Modifier = Modifier) {
-    Row(
+
+    val colors = listOf(Color(0xFFa3e0a3), Color(0xFF78b9f8), Color(0xFFfca595))
+
+    LazyRow(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        anime.genres.forEach { item ->
-            Text(
-                text = item.name,
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.padding(end = 8.dp)
-            )
+        itemsIndexed(anime.genres) { i, item ->
+            Box(
+                Modifier.padding(end = 8.dp)
+            ) {
+                Text(
+                    text = item.name,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = colors[i % colors.size],
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .background(colors[i % colors.size].copy(0.3f))
+                        .padding(vertical = 8.dp, horizontal = 16.dp)
+                        .fillMaxSize()
+                )
+            }
         }
     }
 

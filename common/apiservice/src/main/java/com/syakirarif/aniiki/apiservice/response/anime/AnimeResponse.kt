@@ -1,28 +1,23 @@
 package com.syakirarif.aniiki.apiservice.response.anime
 
-
-import android.os.Parcelable
 import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
 import com.syakirarif.aniiki.apiservice.response.anime.childs.*
-import kotlinx.parcelize.Parcelize
-import kotlinx.parcelize.RawValue
 
 @Keep
-@Parcelize
 data class AnimeResponse(
     @SerializedName("mal_id")
     var malId: Int = 0,
     @SerializedName("url")
     var url: String = "",
     @SerializedName("images")
-    var images: @RawValue Images = Images(),
+    var images: Images = Images(),
     @SerializedName("trailer")
-    var trailer: @RawValue Trailer = Trailer(),
+    var trailer: Trailer = Trailer(),
     @SerializedName("approved")
     var approved: Boolean = false,
     @SerializedName("titles")
-    var titles: @RawValue List<Title> = listOf(),
+    var titles: List<Title> = listOf(),
     @SerializedName("title")
     var title: String = "",
     @SerializedName("title_english")
@@ -42,7 +37,7 @@ data class AnimeResponse(
     @SerializedName("airing")
     var airing: Boolean = false,
     @SerializedName("aired")
-    var aired: @RawValue Aired = Aired(),
+    var aired: Aired = Aired(),
     @SerializedName("duration")
     var duration: String = "",
     @SerializedName("rating")
@@ -50,9 +45,9 @@ data class AnimeResponse(
     @SerializedName("score")
     var score: Double = 0.0,
     @SerializedName("scored_by")
-    var scoredBy: @RawValue Any = Any(),
+    var scoredBy: Any = Any(),
     @SerializedName("rank")
-    var rank: @RawValue Any = Any(),
+    var rank: Any = Any(),
     @SerializedName("popularity")
     var popularity: Int = 0,
     @SerializedName("members")
@@ -68,20 +63,20 @@ data class AnimeResponse(
     @SerializedName("year")
     var year: Int = 0,
     @SerializedName("broadcast")
-    var broadcast: @RawValue Broadcast = Broadcast(),
+    var broadcast: Broadcast = Broadcast(),
     @SerializedName("producers")
-    var producers: @RawValue List<Producer> = listOf(),
+    var producers: List<Producer> = listOf(),
     @SerializedName("licensors")
-    var licensors: @RawValue List<Any> = listOf(),
+    var licensors: List<Any> = listOf(),
     @SerializedName("studios")
-    var studios: @RawValue List<Studio> = listOf(),
+    var studios: List<Studio> = listOf(),
     @SerializedName("genres")
-    var genres: @RawValue List<Genre> = listOf(),
+    var genres: List<Genre> = listOf(),
     @SerializedName("explicit_genres")
-    var explicitGenres: @RawValue List<Any> = listOf(),
+    var explicitGenres: List<Any> = listOf(),
     @SerializedName("themes")
-    var themes: @RawValue List<Theme> = listOf(),
+    var themes: List<Theme> = listOf(),
     @SerializedName("demographics")
-    var demographics: @RawValue List<Demographic> = listOf(),
+    var demographics: List<Demographic> = listOf(),
     var favourite: Boolean = false
-) : Parcelable
+)
