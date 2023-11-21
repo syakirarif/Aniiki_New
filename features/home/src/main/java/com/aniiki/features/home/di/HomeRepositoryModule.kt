@@ -2,6 +2,7 @@ package com.aniiki.features.home.di
 
 import com.aniiki.features.home.repository.DetailRepository
 import com.aniiki.features.home.repository.HomeRepository
+import com.aniiki.features.home.repository.PeopleDetailRepository
 import com.aniiki.features.home.repository.ScheduleRepository
 import com.syakirarif.aniiki.apiservice.api.AnimeEndpoints
 import dagger.Module
@@ -35,5 +36,13 @@ object HomeRepositoryModule {
         animeEndpoints: AnimeEndpoints
     ): DetailRepository {
         return DetailRepository(animeEndpoints)
+    }
+
+    @Provides
+    @ViewModelScoped
+    fun providePeopleDetailRepositoryModule(
+        animeEndpoints: AnimeEndpoints
+    ): PeopleDetailRepository {
+        return PeopleDetailRepository(animeEndpoints)
     }
 }

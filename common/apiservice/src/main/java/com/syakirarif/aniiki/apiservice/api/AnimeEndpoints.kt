@@ -74,4 +74,8 @@ interface AnimeEndpoints {
         @Path(value = "anime_id", encoded = true) animeId: String
     ): ApiResponse<JikanBaseResponseGeneric<List<Character>>>
 
+    @GET("characters/{char_id}/full")
+    suspend fun getCharacterDetail(
+        @Path(value = "char_id", encoded = true) charId: String
+    ): ApiResponse<JikanBaseResponseGeneric<List<Character>>>
 }
