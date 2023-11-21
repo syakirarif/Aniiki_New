@@ -38,4 +38,8 @@ object DetailAnime : NavScreen {
     override val route = "detail"
 }
 
+object DetailPeople : NavScreen {
+    override val route = "detailPeople"
+}
+
 val homeTabRowScreens = listOf(Home, Schedule, Library)

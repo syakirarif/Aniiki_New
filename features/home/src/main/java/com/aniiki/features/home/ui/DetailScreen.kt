@@ -83,7 +83,11 @@ import kotlinx.coroutines.launch
 
 @ExperimentalCoroutinesApi
 @Composable
-fun DetailMainScreen(detailViewModel: DetailViewModel, onBackPressed: () -> Unit) {
+fun DetailMainScreen(
+    detailViewModel: DetailViewModel,
+    onBackPressed: () -> Unit,
+    onPeopleClicked: () -> Unit
+) {
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -100,6 +104,7 @@ fun DetailMainScreen(detailViewModel: DetailViewModel, onBackPressed: () -> Unit
             DetailMainScreen2(
                 detailViewModel = detailViewModel,
                 onBackPressed = onBackPressed,
+                onPeopleClicked = onPeopleClicked,
                 modifier = Modifier.padding(innerPadding)
 //                modifier = Modifier.padding(
 //                    start = innerPadding.calculateStartPadding(LayoutDirection.Ltr),
@@ -152,7 +157,8 @@ fun DetailScreenTopBar(onBackPressed: () -> Unit, modifier: Modifier = Modifier)
 fun DetailMainScreen2(
     detailViewModel: DetailViewModel,
     onBackPressed: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onPeopleClicked: () -> Unit
 ) {
 
 //    val systemUiController = rememberSystemUiController()
@@ -412,7 +418,10 @@ fun DetailMainScreen2(
                         items(animeCharacters) { item ->
                             if (item.voiceActors.isNotEmpty())
                                 CharacterComponent(
-                                    item = item
+                                    item = item,
+                                    modifier = Modifier.clickable {
+                                        onPeopleClicked()
+                                    }
                                 )
                         }
                     }

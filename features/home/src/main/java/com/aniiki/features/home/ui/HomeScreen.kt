@@ -87,6 +87,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.aniiki.features.home.ui.people.PeopleDetailScreen
 import com.aniiki.features.home.ui.state.HomeUiState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.skydoves.landscapist.ImageOptions
@@ -175,8 +176,12 @@ fun HomeScreenApp(
         composable(route = DetailAnime.route) {
             DetailMainScreen(
                 detailViewModel = detailViewModel,
-                onBackPressed = { navController.popBackStack() }
+                onBackPressed = { navController.popBackStack() },
+                onPeopleClicked = { navController.navigate(DetailPeople.route) }
             )
+        }
+        composable(route = DetailPeople.route) {
+            PeopleDetailScreen()
         }
     }
 }
