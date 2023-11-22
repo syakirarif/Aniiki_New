@@ -10,6 +10,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
+import com.aniiki.features.home.ui.people.PeopleDetailViewModel
 import com.syakirarif.aniiki.compose.theme.BidayahTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -19,6 +20,7 @@ class HomeActivity : ComponentActivity() {
     private val homeViewModel: HomeViewModel by viewModels()
     private val scheduleViewModel: ScheduleViewModel by viewModels()
     private val detailViewModel: DetailViewModel by viewModels()
+    private val peopleDetailViewModel: PeopleDetailViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,6 +60,7 @@ class HomeActivity : ComponentActivity() {
                         homeViewModel = homeViewModel,
                         scheduleViewModel = scheduleViewModel,
                         detailViewModel = detailViewModel,
+                        peopleDetailViewModel = peopleDetailViewModel
 //                        modifier = Modifier
 //                            .navigationBarsPadding()
                     )
