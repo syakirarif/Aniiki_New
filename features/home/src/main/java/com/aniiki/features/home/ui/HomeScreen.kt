@@ -88,6 +88,7 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.aniiki.features.home.ui.people.PeopleDetailScreen
+import com.aniiki.features.home.ui.people.PeopleDetailViewModel
 import com.aniiki.features.home.ui.state.HomeUiState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.skydoves.landscapist.ImageOptions
@@ -116,6 +117,7 @@ fun HomeScreenApp(
     homeViewModel: HomeViewModel,
     scheduleViewModel: ScheduleViewModel,
     detailViewModel: DetailViewModel,
+    peopleDetailViewModel: PeopleDetailViewModel,
     modifier: Modifier = Modifier
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -177,11 +179,16 @@ fun HomeScreenApp(
             DetailMainScreen(
                 detailViewModel = detailViewModel,
                 onBackPressed = { navController.popBackStack() },
-                onPeopleClicked = { navController.navigate(DetailPeople.route) }
+                onPeopleClicked = { charId ->
+                    peopleDetailViewModel.getCharacterDetail(charId)
+                    navController.navigate(DetailPeople.route)
+                }
             )
         }
         composable(route = DetailPeople.route) {
-            PeopleDetailScreen()
+            PeopleDetailScreen(
+                peopleDetailViewModel = peopleDetailViewModel
+            )
         }
     }
 }

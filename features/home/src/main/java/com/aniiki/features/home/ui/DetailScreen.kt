@@ -63,6 +63,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.aniiki.features.home.ui.state.DetailUiState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.glide.GlideImage
@@ -86,7 +87,7 @@ import kotlinx.coroutines.launch
 fun DetailMainScreen(
     detailViewModel: DetailViewModel,
     onBackPressed: () -> Unit,
-    onPeopleClicked: () -> Unit
+    onPeopleClicked: (String) -> Unit
 ) {
 
     Surface(
@@ -158,7 +159,7 @@ fun DetailMainScreen2(
     detailViewModel: DetailViewModel,
     onBackPressed: () -> Unit,
     modifier: Modifier = Modifier,
-    onPeopleClicked: () -> Unit
+    onPeopleClicked: (String) -> Unit
 ) {
 
 //    val systemUiController = rememberSystemUiController()
@@ -203,7 +204,9 @@ fun DetailMainScreen2(
 //    detailViewModel.getAnimePictures4("53887")
 //    detailViewModel.getAnimePictures4()
 
-    val animePictures by detailViewModel.animePictures2.collectAsState()
+//    val detailUiState by detailViewModel.detailUiState.collectAsState()
+
+    val animePictures by detailViewModel.animePictures.collectAsState()
 
     val animeCharacters by detailViewModel.animeCharacters.collectAsState()
 
@@ -238,18 +241,12 @@ fun DetailMainScreen2(
 //    }
 
 //    val anime = animeSaveable.value
-    val animeId = anime.malId.orNullEmpty()
+//    val animeId = anime.malId.orNullEmpty()
 
-    LaunchedEffect(key1 = animeId) {
-        detailViewModel.getAnimePictures4(animeId)
-        detailViewModel.getAnimeCharacters(animeId)
-//        Timber.e("animePictures | isLoading => ${animePictures.isLoading}")
-//        Timber.e("animePictures | isError => ${animePictures.isError}")
-//
-//        if (!animePictures.isLoading) {
-//            Timber.e("animePictures | data => ${animePictures.dataPictures.size}")
-//        }
-    }
+//    LaunchedEffect(key1 = animeId) {
+//        detailViewModel.getAnimePictures(animeId)
+//        detailViewModel.getAnimeCharacters(animeId)
+//    }
 
     val banner: MutableList<String> = mutableListOf()
     var bannerSet: Set<String> = mutableSetOf()
@@ -397,36 +394,44 @@ fun DetailMainScreen2(
                         modifier = Modifier.padding(horizontal = 16.dp)
                     )
                     20.spacer()
-                    Text(
-                        text = "Characters & Casts",
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = textColor,
-                        modifier = Modifier
-                            .padding(horizontal = 16.dp)
+                    CharactersAndCastSection(
+                        textColor = textColor,
+                        animeCharacters = animeCharacters,
+                        onPeopleClicked = onPeopleClicked
                     )
-                    20.spacer()
-                    LazyRow(
-//                    Modifier.fillMaxSize()
-//                    rows = GridCells.Adaptive(minSize = 140.dp),
-//                    contentPadding = PaddingValues(bottom = 80.dp),
-//                    modifier = Modifier
-////                            .defaultMinSize(140.dp)
-//                        .padding(start = 16.dp),
-//                        contentPadding = PaddingValues(end = 16.dp)
-                    ) {
-//                        Timber.e("animeCharacters | items: ${animeCharacters.size}")
-                        items(animeCharacters) { item ->
-                            if (item.voiceActors.isNotEmpty())
-                                CharacterComponent(
-                                    item = item,
-                                    modifier = Modifier.clickable {
-                                        onPeopleClicked()
-                                    }
-                                )
-                        }
-                    }
                     80.spacer()
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun CharactersAndCastSection(
+    textColor: Color,
+    animeCharacters: DetailUiState,
+    onPeopleClicked: (String) -> Unit
+) {
+    Text(
+        text = "Characters & Casts",
+        style = MaterialTheme.typography.headlineSmall,
+        color = textColor,
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
+    )
+    20.spacer()
+    if (animeCharacters.isLoading) {
+        LoadingScreen()
+    } else {
+        LazyRow {
+            items(animeCharacters.dataCharacters) { item ->
+                CharacterComponent(
+                    item = item,
+                    modifier = Modifier.clickable {
+                        val charId = item.character.malId.toString()
+                        onPeopleClicked(charId)
+                    }
+                )
             }
         }
     }
@@ -693,38 +698,39 @@ fun CharacterComponent(item: Character, modifier: Modifier = Modifier) {
             }
         }
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp))
-                .background(color = Color.Black.copy(alpha = 0.4f))
-                .padding(10.dp, 10.dp, 10.dp, 16.dp),
-            horizontalArrangement = Arrangement.Start,
-            verticalAlignment = Alignment.Bottom
-        ) {
-            GlideImage(
-                imageModel = { item.voiceActors[0].person.images.jpg.imageUrl },
+        if (item.voiceActors.isNotEmpty())
+            Row(
                 modifier = Modifier
-                    .size(38.dp)
-                    .clip(CircleShape),
-                imageOptions = ImageOptions(
-                    contentScale = ContentScale.Crop,
-                ),
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp))
+                    .background(color = Color.Black.copy(alpha = 0.4f))
+                    .padding(10.dp, 10.dp, 10.dp, 16.dp),
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.Bottom
+            ) {
+                GlideImage(
+                    imageModel = { item.voiceActors[0].person.images.jpg.imageUrl },
+                    modifier = Modifier
+                        .size(38.dp)
+                        .clip(CircleShape),
+                    imageOptions = ImageOptions(
+                        contentScale = ContentScale.Crop,
+                    ),
 
-                )
-            8.spacer()
-            Column(verticalArrangement = Arrangement.Center) {
-                Text(
-                    item.voiceActors[0].person.name,
-                    style = MaterialTheme.typography.labelLarge,
-                    color = Color.White
-                )
-                Text(
-                    item.voiceActors[0].language + " VA",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = Color.White.copy(alpha = 0.7F)
-                )
+                    )
+                8.spacer()
+                Column(verticalArrangement = Arrangement.Center) {
+                    Text(
+                        item.voiceActors[0].person.name,
+                        style = MaterialTheme.typography.labelLarge,
+                        color = Color.White
+                    )
+                    Text(
+                        item.voiceActors[0].language + " VA",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = Color.White.copy(alpha = 0.7F)
+                    )
+                }
             }
-        }
     }
 }

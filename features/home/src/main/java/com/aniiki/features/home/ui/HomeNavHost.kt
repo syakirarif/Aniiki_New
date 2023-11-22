@@ -10,7 +10,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.syakirarif.aniiki.core.utils.orNullEmpty
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @Composable
 fun HomeNavHost(
     navHostController: NavHostController,
@@ -52,6 +55,8 @@ fun HomeNavHost(
                 homeViewModel = homeViewModel,
                 onItemClicked = { item ->
                     detailViewModel.setAnimeResponse(item)
+                    detailViewModel.getAnimePictures(item?.malId.orNullEmpty())
+                    detailViewModel.getAnimeCharacters(item?.malId.orNullEmpty())
                     navHostController.navigate(DetailAnime.route)
                 }
             )
@@ -61,6 +66,8 @@ fun HomeNavHost(
                 scheduleViewModel = scheduleViewModel,
                 onItemClicked = { item ->
                     detailViewModel.setAnimeResponse(item)
+                    detailViewModel.getAnimePictures(item?.malId.orNullEmpty())
+                    detailViewModel.getAnimeCharacters(item?.malId.orNullEmpty())
                     navHostController.navigate(DetailAnime.route)
                 }
             )
