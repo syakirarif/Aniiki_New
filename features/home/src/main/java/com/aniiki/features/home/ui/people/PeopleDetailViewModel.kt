@@ -22,11 +22,23 @@ class PeopleDetailViewModel @Inject constructor(
     private val _charDetail = MutableStateFlow(PeopleDetailUiState())
     val charDetail: StateFlow<PeopleDetailUiState> get() = _charDetail.asStateFlow()
 
+    private val _peopleDetail = MutableStateFlow(PeopleDetailUiState())
+    val peopleDetail: StateFlow<PeopleDetailUiState> get() = _peopleDetail.asStateFlow()
+
     fun getCharacterDetail(charId: String) {
         viewModelScope.launch {
             peopleDetailRepository.getCharacterDetail(charId)
                 .collectLatest {
                     _charDetail.value = it
+                }
+        }
+    }
+
+    fun getPeopleDetail(malId: String) {
+        viewModelScope.launch {
+            peopleDetailRepository.getPeopleDetail(malId)
+                .collectLatest {
+                    _peopleDetail.value = it
                 }
         }
     }

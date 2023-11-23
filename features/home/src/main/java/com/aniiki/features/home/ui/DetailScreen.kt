@@ -451,7 +451,7 @@ fun GenreSection(anime: AnimeResponse, modifier: Modifier = Modifier) {
                 Modifier.padding(end = 8.dp)
             ) {
                 Text(
-                    text = item.name,
+                    text = item.name.orNullEmpty(),
                     style = MaterialTheme.typography.bodyLarge,
                     color = colors[i % colors.size],
                     modifier = Modifier
@@ -686,12 +686,12 @@ fun CharacterComponent(item: Character, modifier: Modifier = Modifier) {
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    item.character.name,
+                    item.character.name.orNullEmpty(),
                     style = MaterialTheme.typography.titleMedium,
                     color = Color.White
                 )
                 Text(
-                    item.role,
+                    item.role.orNullEmpty(),
                     style = MaterialTheme.typography.titleSmall,
                     color = Color.White.copy(alpha = 0.7F)
                 )
@@ -709,7 +709,7 @@ fun CharacterComponent(item: Character, modifier: Modifier = Modifier) {
                 verticalAlignment = Alignment.Bottom
             ) {
                 GlideImage(
-                    imageModel = { item.voiceActors[0].person.images.jpg.imageUrl },
+                    imageModel = { item.voiceActors[0].person.images.jpg.imageUrl.orNullEmpty() },
                     modifier = Modifier
                         .size(38.dp)
                         .clip(CircleShape),
@@ -718,15 +718,15 @@ fun CharacterComponent(item: Character, modifier: Modifier = Modifier) {
                     ),
 
                     )
-                8.spacer()
+                16.spacer()
                 Column(verticalArrangement = Arrangement.Center) {
                     Text(
-                        item.voiceActors[0].person.name,
+                        item.voiceActors[0].person.name.orNullEmpty(),
                         style = MaterialTheme.typography.labelLarge,
                         color = Color.White
                     )
                     Text(
-                        item.voiceActors[0].language + " VA",
+                        item.voiceActors[0].language.orNullEmpty() + " VA",
                         style = MaterialTheme.typography.labelMedium,
                         color = Color.White.copy(alpha = 0.7F)
                     )

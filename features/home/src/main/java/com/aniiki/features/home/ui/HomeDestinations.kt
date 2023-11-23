@@ -4,6 +4,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.ui.graphics.vector.ImageVector
 
 interface HomeDestination {
@@ -30,6 +31,11 @@ object Library : HomeDestination {
     override val route = "Library"
 }
 
+object Search : HomeDestination {
+    override val icon = Icons.Filled.Search
+    override val route = "Search"
+}
+
 object Dashboard : NavScreen {
     override val route = "dashboard"
 }
@@ -38,8 +44,12 @@ object DetailAnime : NavScreen {
     override val route = "detail"
 }
 
+object DetailCharacter : NavScreen {
+    override val route = "detailCharacter"
+}
+
 object DetailPeople : NavScreen {
     override val route = "detailPeople"
 }
 
-val homeTabRowScreens = listOf(Home, Schedule, Library)
+val homeTabRowScreens = listOf(Home, Schedule, Search, Library)

@@ -11,6 +11,7 @@ import com.skydoves.sandwich.suspendOnFailure
 import com.skydoves.sandwich.suspendOnSuccess
 import com.syakirarif.aniiki.apiservice.api.AnimeEndpoints
 import com.syakirarif.aniiki.apiservice.response.character.AnimeCharacterResponse
+import com.syakirarif.aniiki.apiservice.response.people.PeopleResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -43,6 +44,34 @@ class PeopleDetailRepository constructor(
             )
         }.suspendOnFailure {
             Timber.e("PeopleDetailRepository | getCharacterDetail | onFailure | msg: ${this.message()}")
+            emit(
+                unsuccessfulPeopleDetailUiState(this.message())
+            )
+        }
+    }.onStart { emit(PeopleDetailUiState(isLoading = true)) }.flowOn(Dispatchers.IO)
+
+    @WorkerThread
+    fun getPeopleDetail(malId: String): Flow<PeopleDetailUiState> = flow {
+
+        val response = animeEndpoints.getPeopleDetail(malId = malId)
+
+        response.suspendOnSuccess {
+            Timber.e("PeopleDetailRepository | getPeopleDetail | onSuccess | items: ${this.data.data?.name}")
+            emit(
+                PeopleDetailUiState(
+                    isLoading = false,
+                    isError = !this.isSuccess,
+                    errorMessage = this.messageOrNull ?: "",
+                    dataPeopleDetail = this.data.data ?: PeopleResponse()
+                )
+            )
+        }.suspendOnError {
+            Timber.e("PeopleDetailRepository | getPeopleDetail | onError | msg: ${this.message()}")
+            emit(
+                unsuccessfulPeopleDetailUiState(this.message())
+            )
+        }.suspendOnFailure {
+            Timber.e("PeopleDetailRepository | getPeopleDetail | onFailure | msg: ${this.message()}")
             emit(
                 unsuccessfulPeopleDetailUiState(this.message())
             )

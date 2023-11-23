@@ -9,6 +9,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.aniiki.features.home.ui.search.SearchMainScreen
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.syakirarif.aniiki.core.utils.orNullEmpty
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -74,6 +75,9 @@ fun HomeNavHost(
         }
         composable(route = Library.route) {
             LibraryMainScreen(screenName = Library.route)
+        }
+        composable(route = Search.route) {
+            SearchMainScreen(screenName = Search.route)
         }
     }
 }

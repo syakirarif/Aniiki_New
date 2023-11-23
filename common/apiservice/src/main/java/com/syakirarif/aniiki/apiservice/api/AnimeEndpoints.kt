@@ -5,6 +5,7 @@ import com.syakirarif.aniiki.apiservice.response.anime.AnimeResponse
 import com.syakirarif.aniiki.apiservice.response.anime.childs.Character
 import com.syakirarif.aniiki.apiservice.response.anime.childs.Images
 import com.syakirarif.aniiki.apiservice.response.character.AnimeCharacterResponse
+import com.syakirarif.aniiki.apiservice.response.people.PeopleResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -79,4 +80,9 @@ interface AnimeEndpoints {
     suspend fun getCharacterDetail(
         @Path(value = "char_id", encoded = true) charId: String
     ): ApiResponse<JikanBaseResponseGeneric<AnimeCharacterResponse>>
+
+    @GET("people/{mal_id}/full")
+    suspend fun getPeopleDetail(
+        @Path(value = "mal_id", encoded = true) malId: String
+    ): ApiResponse<JikanBaseResponseGeneric<PeopleResponse>>
 }

@@ -87,7 +87,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.aniiki.features.home.ui.people.PeopleDetailScreen
+import com.aniiki.features.home.ui.people.CharacterDetailMainScreen
+import com.aniiki.features.home.ui.people.PeopleDetailMainScreen
 import com.aniiki.features.home.ui.people.PeopleDetailViewModel
 import com.aniiki.features.home.ui.state.HomeUiState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -181,12 +182,21 @@ fun HomeScreenApp(
                 onBackPressed = { navController.popBackStack() },
                 onPeopleClicked = { charId ->
                     peopleDetailViewModel.getCharacterDetail(charId)
+                    navController.navigate(DetailCharacter.route)
+                }
+            )
+        }
+        composable(route = DetailCharacter.route) {
+            CharacterDetailMainScreen(
+                peopleDetailViewModel = peopleDetailViewModel,
+                onVAClicked = { malId ->
+                    peopleDetailViewModel.getPeopleDetail(malId = malId)
                     navController.navigate(DetailPeople.route)
                 }
             )
         }
         composable(route = DetailPeople.route) {
-            PeopleDetailScreen(
+            PeopleDetailMainScreen(
                 peopleDetailViewModel = peopleDetailViewModel
             )
         }
