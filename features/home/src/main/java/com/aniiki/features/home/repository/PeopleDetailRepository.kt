@@ -10,6 +10,7 @@ import com.skydoves.sandwich.suspendOnError
 import com.skydoves.sandwich.suspendOnFailure
 import com.skydoves.sandwich.suspendOnSuccess
 import com.syakirarif.aniiki.apiservice.api.AnimeEndpoints
+import com.syakirarif.aniiki.apiservice.response.anime.childs.Person
 import com.syakirarif.aniiki.apiservice.response.character.AnimeCharacterResponse
 import com.syakirarif.aniiki.apiservice.response.people.PeopleResponse
 import kotlinx.coroutines.Dispatchers
@@ -57,12 +58,22 @@ class PeopleDetailRepository constructor(
 
         response.suspendOnSuccess {
             Timber.e("PeopleDetailRepository | getPeopleDetail | onSuccess | items: ${this.data.data?.name}")
+
+            val listChar: MutableList<Person> = mutableListOf()
+            this.data.data?.voices?.forEach { voice ->
+                listChar.add(voice.character)
+            }
+
+            val setChar = listChar.toSet()
+            val listCharUnique = setChar.toList()
+
             emit(
                 PeopleDetailUiState(
                     isLoading = false,
                     isError = !this.isSuccess,
                     errorMessage = this.messageOrNull ?: "",
-                    dataPeopleDetail = this.data.data ?: PeopleResponse()
+                    dataPeopleDetail = this.data.data ?: PeopleResponse(),
+                    dataPeopleVoicedCharacters = listCharUnique
                 )
             )
         }.suspendOnError {

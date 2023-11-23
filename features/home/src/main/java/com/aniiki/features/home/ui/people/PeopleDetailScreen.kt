@@ -94,7 +94,7 @@ fun PeopleDetailMainScreen(
                         }
 
                     }
-                    if (dataPeople.voices.isNotEmpty()) {
+                    if (peopleDetail.dataPeopleVoicedCharacters.isNotEmpty()) {
                         Text(
                             text = "Voiced Characters",
                             style = MaterialTheme.typography.titleLarge,
@@ -103,11 +103,11 @@ fun PeopleDetailMainScreen(
                         )
                         4.spacer()
                         LazyRow {
-                            items(dataPeople.voices) { voice ->
+                            items(peopleDetail.dataPeopleVoicedCharacters) { char ->
                                 CharsCard(
-                                    imageUrl = voice.character.images.jpg.imageUrl,
-                                    title = voice.character.name.orNullEmpty(),
-                                    role = voice.role.orNullEmpty(),
+                                    imageUrl = char.images.jpg.imageUrl,
+                                    title = char.name.orNullEmpty(),
+                                    role = "",
                                     onCardClicked = { }
                                 )
                             }
