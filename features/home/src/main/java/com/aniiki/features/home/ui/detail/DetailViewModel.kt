@@ -1,4 +1,4 @@
-package com.aniiki.features.home.ui
+package com.aniiki.features.home.ui.detail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

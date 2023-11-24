@@ -1,4 +1,4 @@
-package com.aniiki.features.home.ui
+package com.aniiki.features.home.ui.schedule
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.aniiki.features.home.ui.home.AnimeGridList
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.syakirarif.aniiki.apiservice.response.anime.AnimeResponse
 import com.syakirarif.aniiki.compose.spacer

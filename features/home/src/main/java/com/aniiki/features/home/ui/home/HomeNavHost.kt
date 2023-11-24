@@ -1,4 +1,4 @@
-package com.aniiki.features.home.ui
+package com.aniiki.features.home.ui.home
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
@@ -9,6 +9,10 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.aniiki.features.home.ui.detail.DetailViewModel
+import com.aniiki.features.home.ui.library.LibraryMainScreen
+import com.aniiki.features.home.ui.schedule.ScheduleMainScreen
+import com.aniiki.features.home.ui.schedule.ScheduleViewModel
 import com.aniiki.features.home.ui.search.SearchMainScreen
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.syakirarif.aniiki.core.utils.orNullEmpty

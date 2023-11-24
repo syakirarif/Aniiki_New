@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.aniiki.features.home.ui
+package com.aniiki.features.home.ui.detail
 
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.MutableTransitionState
@@ -63,6 +63,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.aniiki.features.home.ui.home.LoadingScreen
 import com.aniiki.features.home.ui.state.DetailUiState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.skydoves.landscapist.ImageOptions

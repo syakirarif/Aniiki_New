@@ -10,7 +10,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
+import com.aniiki.features.home.ui.detail.DetailViewModel
+import com.aniiki.features.home.ui.home.HomeScreenApp
+import com.aniiki.features.home.ui.home.HomeViewModel
 import com.aniiki.features.home.ui.people.PeopleDetailViewModel
+import com.aniiki.features.home.ui.schedule.ScheduleViewModel
 import com.syakirarif.aniiki.compose.theme.BidayahTheme
 import dagger.hilt.android.AndroidEntryPoint
 

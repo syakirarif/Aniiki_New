@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.aniiki.features.home.ui
+package com.aniiki.features.home.ui.home
 
 import android.content.Context
 import android.widget.Toast
@@ -87,9 +87,12 @@ import androidx.navigation.compose.rememberNavController
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.aniiki.features.home.ui.detail.DetailMainScreen
+import com.aniiki.features.home.ui.detail.DetailViewModel
 import com.aniiki.features.home.ui.people.CharacterDetailMainScreen
 import com.aniiki.features.home.ui.people.PeopleDetailMainScreen
 import com.aniiki.features.home.ui.people.PeopleDetailViewModel
+import com.aniiki.features.home.ui.schedule.ScheduleViewModel
 import com.aniiki.features.home.ui.state.HomeUiState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.skydoves.landscapist.ImageOptions

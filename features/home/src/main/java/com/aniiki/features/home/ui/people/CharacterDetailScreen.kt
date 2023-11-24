@@ -33,7 +33,7 @@ import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.aniiki.features.home.ui.LoadingScreen
+import com.aniiki.features.home.ui.home.LoadingScreen
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.glide.GlideImage
 import com.syakirarif.aniiki.compose.fadingEdge

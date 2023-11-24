@@ -19,7 +19,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.aniiki.features.home.ui.LoadingScreen
+import com.aniiki.features.home.ui.home.LoadingScreen
 import com.syakirarif.aniiki.compose.spacer
 import com.syakirarif.aniiki.core.utils.orNullEmpty
 import kotlinx.coroutines.ExperimentalCoroutinesApi

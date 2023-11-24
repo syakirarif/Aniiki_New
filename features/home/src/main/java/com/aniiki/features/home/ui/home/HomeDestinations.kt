@@ -1,4 +1,4 @@
-package com.aniiki.features.home.ui
+package com.aniiki.features.home.ui.home
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
