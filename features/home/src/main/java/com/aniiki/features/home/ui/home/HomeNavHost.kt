@@ -31,16 +31,8 @@ fun HomeNavHost(
 
     val systemUiController = rememberSystemUiController()
     val useDarkIcons = !isSystemInDarkTheme()
-//    val color = MaterialTheme.colorScheme.surface
-//    val color = NavigationBarDefaults.containerColor
-//    val color = MaterialTheme.colorScheme.contentColorFor(containerColor)
 
     DisposableEffect(key1 = systemUiController, key2 = useDarkIcons) {
-
-//        systemUiController.setSystemBarsColor(
-//            color = Color.Transparent,
-//            darkIcons = useDarkIcons
-//        )
 
         systemUiController.setNavigationBarColor(
             color = Color.Transparent,
