@@ -14,14 +14,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -60,7 +57,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.consumeAllChanges
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.aniiki.features.home.ui.home.LoadingScreen
@@ -82,7 +78,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-
 @ExperimentalCoroutinesApi
 @Composable
 fun DetailMainScreen(
@@ -101,18 +96,12 @@ fun DetailMainScreen(
                 DetailScreenTopBar(onBackPressed = onBackPressed)
             },
             bottomBar = {}
-//        color = MaterialTheme.colorScheme.background
         ) { innerPadding ->
             DetailMainScreen2(
                 detailViewModel = detailViewModel,
                 onBackPressed = onBackPressed,
                 onPeopleClicked = onPeopleClicked,
                 modifier = Modifier.padding(innerPadding)
-//                modifier = Modifier.padding(
-//                    start = innerPadding.calculateStartPadding(LayoutDirection.Ltr),
-//                    end = innerPadding.calculateEndPadding(LayoutDirection.Ltr),
-//                    bottom = innerPadding.calculateBottomPadding()
-//                )
             )
         }
     }
@@ -127,13 +116,7 @@ fun DetailScreenTopBar(onBackPressed: () -> Unit, modifier: Modifier = Modifier)
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = Color.Transparent
         ),
-        title = {
-//                        Text(
-//                            anime.title.orNullEmpty(),
-//                            style = MaterialTheme.typography.titleLarge,
-//                            color = Color.White
-//                        )
-        },
+        title = {},
         navigationIcon = {
             IconButton(onClick = { onBackPressed() })
             {
@@ -147,10 +130,6 @@ fun DetailScreenTopBar(onBackPressed: () -> Unit, modifier: Modifier = Modifier)
                 )
             }
         },
-//                    colors = TopAppBarDefaults.topAppBarColors()
-//                backgroundColor = MaterialTheme.colorScheme.background,
-//                contentColor = MaterialTheme.colorScheme.background,
-//                elevation = 0.dp
     )
 }
 
@@ -158,31 +137,13 @@ fun DetailScreenTopBar(onBackPressed: () -> Unit, modifier: Modifier = Modifier)
 @Composable
 fun DetailMainScreen2(
     detailViewModel: DetailViewModel,
+    onPeopleClicked: (String) -> Unit,
     onBackPressed: () -> Unit,
-    modifier: Modifier = Modifier,
-    onPeopleClicked: (String) -> Unit
+    modifier: Modifier = Modifier
 ) {
-
-//    val systemUiController = rememberSystemUiController()
-////    val useDarkIcons = !isSystemInDarkTheme()
-////
-//    DisposableEffect(systemUiController, useDarkIcons) {
-//        systemUiController.setSystemBarsColor(
-//            color = Color.Transparent,
-//            darkIcons = useDarkIcons
-//        )
-//
-//        onDispose {}
-//    }
-
     val systemUiController = rememberSystemUiController()
 
     DisposableEffect(key1 = systemUiController) {
-
-//        systemUiController.setSystemBarsColor(
-//            color = Color.Transparent,
-//            darkIcons = false
-//        )
 
         systemUiController.setStatusBarColor(
             color = Color.Transparent,
@@ -200,25 +161,11 @@ fun DetailMainScreen2(
 
     val anime by detailViewModel.animeResponse.collectAsState()
 
-//    detailViewModel.animeId = anime.malId.orNullEmpty()
-//    detailViewModel.getAnimePictures4(anime.malId.orNullEmpty())
-//    detailViewModel.getAnimePictures4("53887")
-//    detailViewModel.getAnimePictures4()
-
-//    val detailUiState by detailViewModel.detailUiState.collectAsState()
-
     val animePictures by detailViewModel.animePictures.collectAsState()
 
     val animeCharacters by detailViewModel.animeCharacters.collectAsState()
 
-
-//    val animeId by detailViewModel.animeId.collectAsState()
-
-//    detailViewModel.getAnimePictures(anime.malId.orNullEmpty())
-
     val posterSize = 600
-
-    val context = LocalContext.current
 
     val topFade = Brush.verticalGradient(0f to Color.Transparent, 0.3f to Color.Red)
 
@@ -236,18 +183,6 @@ fun DetailMainScreen2(
             restore = { AnimeResponse(malId = it[animeId] as Int) }
         )
     }
-
-//    val animeSaveable = rememberSaveable {
-//        mutableStateOf(animeResponse)
-//    }
-
-//    val anime = animeSaveable.value
-//    val animeId = anime.malId.orNullEmpty()
-
-//    LaunchedEffect(key1 = animeId) {
-//        detailViewModel.getAnimePictures(animeId)
-//        detailViewModel.getAnimeCharacters(animeId)
-//    }
 
     val banner: MutableList<String> = mutableListOf()
     var bannerSet: Set<String> = mutableSetOf()
@@ -268,10 +203,7 @@ fun DetailMainScreen2(
         banner.add(it)
     }
 
-//    Timber.e("animePictures | data => ${animePictures.size}")
-
     Box(
-//        contentAlignment = Alignment.TopCenter,
         modifier = Modifier
             .fillMaxSize()
             .background(color = bgColor)
@@ -279,7 +211,6 @@ fun DetailMainScreen2(
         Box(
             Modifier.align(Alignment.TopCenter)
         ) {
-//            if (banner.isNotEmpty()) {
             DetailAnimePosterSlider(
                 data = banner, modifier = Modifier
                     .height(posterSize.dp)
@@ -287,20 +218,6 @@ fun DetailMainScreen2(
                         Alignment.TopCenter
                     )
             )
-//            } else
-//                GlideImage(
-//                    imageModel = { anime.images.webp.largeImageUrl },
-//                    imageOptions = ImageOptions(
-//                        contentScale = ContentScale.Crop
-//                    ),
-//                    loading = { LoadingScreen() },
-//                    modifier = Modifier
-//                        //                .fillMaxSize()
-//                        .height(posterSize.dp)
-//                        //                .fillMaxHeight()
-//                        .fillMaxWidth()
-//                        .align(Alignment.TopCenter),
-//                )
             Box(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
@@ -313,13 +230,6 @@ fun DetailMainScreen2(
                                 md_theme_dark_surface.copy(alpha = 0.5f),
                                 md_theme_dark_surface
                             )
-//                            colors = if (isInDarkTheme) listOf(
-//                                md_theme_dark_surface.copy(alpha = 0.5f),
-//                                md_theme_dark_surface
-//                            ) else listOf(
-//                                md_theme_light_surface.copy(alpha = 0.5f),
-//                                md_theme_light_surface
-//                            )
                         )
                     )
                     .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 8.dp)
@@ -507,15 +417,11 @@ fun ItemDetail(title: String, value: String) {
 @Composable
 fun DetailAnimePosterSlider(modifier: Modifier = Modifier, data: List<String>) {
 
-    val isInDarkTheme = isSystemInDarkTheme()
-
     val pageState = rememberPagerState { data.size }
-    val heightSize = WindowInsets.systemBars.asPaddingValues()
+
     var finishSwipe by remember { mutableStateOf(false) }
 
     val coroutineScope = CoroutineScope(Dispatchers.Main)
-
-//    var visibility by remember { mutableStateOf(false) }
 
     val visibility = remember {
         MutableTransitionState(false).apply {
@@ -528,11 +434,9 @@ fun DetailAnimePosterSlider(modifier: Modifier = Modifier, data: List<String>) {
         launch {
             delay(3000)
             with(pageState) {
-//                val target = if (currentPage < pageCount - 1) currentPage + 1 else 0
                 var newPosition = pageState.currentPage + 1
                 if (newPosition > data.lastIndex) newPosition = 0
 
-//                visibility = false
                 visibility.targetState = false
 
                 animateScrollToPage(
@@ -544,7 +448,7 @@ fun DetailAnimePosterSlider(modifier: Modifier = Modifier, data: List<String>) {
                 )
 
                 finishSwipe = !finishSwipe
-//                visibility = true
+
                 visibility.targetState = true
             }
         }
@@ -557,7 +461,7 @@ fun DetailAnimePosterSlider(modifier: Modifier = Modifier, data: List<String>) {
         0.7f to Color.Red,
         1f to Color.Transparent
     )
-//    Box(modifier = Modifier.fillMaxSize()) {
+
     HorizontalPager(
         state = pageState,
         modifier = modifier
@@ -594,18 +498,6 @@ fun DetailAnimePosterSlider(modifier: Modifier = Modifier, data: List<String>) {
             imageModel = { data[page] },
             imageOptions = ImageOptions(
                 contentScale = ContentScale.Crop,
-//                alignment = remember(pageState) {
-//                    ParallaxAlignment(
-//                        horizontalBias = {
-//                            val adjustedOffset =
-//                                pageState.currentPageOffsetFraction - pageState.initialPageOffsetFraction
-//                            (adjustedOffset / pageState.pageCount.toFloat()).coerceIn(
-//                                -1f,
-//                                1f
-//                            )
-//                        }
-//                    )
-//                }
             ),
             loading = { LoadingScreen() },
             modifier = modifier
@@ -616,28 +508,6 @@ fun DetailAnimePosterSlider(modifier: Modifier = Modifier, data: List<String>) {
                 }
         )
     }
-//        Box(
-//            Modifier
-//                .align(Alignment.BottomCenter)
-//                .defaultMinSize(minHeight = 120.dp)
-//                .fillMaxHeight()
-//                .fillMaxWidth()
-//                .fadingEdge(topFade)
-//                .background(
-//                    brush = Brush.verticalGradient(
-//                        colors = if (isInDarkTheme) listOf(
-//                            md_theme_dark_surface.copy(alpha = 0.5f),
-//                            md_theme_dark_surface
-//                        ) else listOf(
-//                            md_theme_light_surface.copy(alpha = 0.5f),
-//                            md_theme_light_surface
-//                        )
-//                    )
-//                )
-//                .padding(start = 16.dp, end = 16.dp, top = 32.dp, bottom = 8.dp)
-//
-//        )
-//    }
 }
 
 @Composable
@@ -659,29 +529,13 @@ fun CharacterComponent(item: Character, modifier: Modifier = Modifier) {
         )
         Box(
             modifier = Modifier
-//                .clip(CircleShape)
-//                .background(Color.Black.copy(alpha = 0.5F))
-//                .size(28.dp)
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
                 .background(color = Color.Black.copy(alpha = 0.4f))
                 .align(Alignment.TopStart)
                 .clickable {
-//                    liked.value = !liked.value
                 })
         {
-//            val tint by animateColorAsState(
-//                if (liked.value) Color.Red
-//                else Color.LightGray, label = ""
-//            )
-//            Icon(
-//                if (liked.value) Icons.Default.Favorite else Icons.Outlined.FavoriteBorder,
-//                contentDescription = "",
-//                tint = tint,
-//                modifier = Modifier
-//                    .align(Alignment.Center)
-//                    .padding(6.dp)
-//            )
             Column(
                 modifier = Modifier.padding(10.dp),
                 verticalArrangement = Arrangement.Center
