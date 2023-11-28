@@ -3,7 +3,6 @@
 package com.aniiki.features.home.ui.home
 
 import android.content.Context
-import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -34,8 +33,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
@@ -214,17 +211,8 @@ fun HomeMainScreen(
 ) {
 
     val systemUiController = rememberSystemUiController()
-//    val useDarkIcons = !isSystemInDarkTheme()
-//    val color = MaterialTheme.colorScheme.surface
-//    val color = NavigationBarDefaults.containerColor
-//    val color = MaterialTheme.colorScheme.contentColorFor(containerColor)
 
     DisposableEffect(key1 = systemUiController) {
-
-//        systemUiController.setSystemBarsColor(
-//            color = Color.Transparent,
-//            darkIcons = useDarkIcons
-//        )
 
         systemUiController.setStatusBarColor(
             color = Color.Transparent,
@@ -277,13 +265,6 @@ fun HomeMainScreen(
                     errorMessageMain = animeSeasonState.errorMessage,
                     onItemClicked = onItemClicked
                 )
-//                8.spacer()
-//                HomeAnimeHeading(title = "Top 10 Airing Anime")
-//                HomeAnimeList(
-//                    homeUiState = animeTopAiring,
-//                    onErrorClick = { },
-//                    onItemClicked = onItemClicked
-//                )
                 8.spacer()
                 HomeAnimeHeading(title = "Top 10 Upcoming Anime")
                 HomeAnimeList(
@@ -314,8 +295,6 @@ fun HomeAnimePosterSlider(
 
     val coroutineScope = CoroutineScope(Dispatchers.Main)
 
-//    var visibility by remember { mutableStateOf(false) }
-
     val visibility = remember {
         MutableTransitionState(false).apply {
             // Start the animation immediately.
@@ -327,11 +306,9 @@ fun HomeAnimePosterSlider(
         launch {
             delay(4000)
             with(pageState) {
-//                val target = if (currentPage < pageCount - 1) currentPage + 1 else 0
                 var newPosition = pageState.currentPage + 1
                 if (newPosition > data.lastIndex) newPosition = 0
 
-//                visibility = false
                 visibility.targetState = false
 
                 animateScrollToPage(
@@ -343,7 +320,7 @@ fun HomeAnimePosterSlider(
                 )
 
                 finishSwipe = !finishSwipe
-//                visibility = true
+
                 visibility.targetState = true
             }
         }
@@ -718,23 +695,13 @@ fun AnimeContent(
             loading = { LoadingScreen() },
             modifier = Modifier
                 .fillMaxWidth()
-//                        .padding(4.dp)
-//                            .height(200.dp)
                 .clip(RoundedCornerShape(8.dp))
                 .clickable {
                     onItemClicked(item)
-//                    Toast
-//                        .makeText(
-//                            context,
-//                            title,
-//                            Toast.LENGTH_SHORT
-//                        )
-//                        .show()
                 }
         )
         Row(
             modifier = Modifier
-//                        .padding(16.dp, 16.dp, 0.dp, 16.dp)
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(bottomStart = 8.dp, bottomEnd = 8.dp))
                 .background(color = Color.Black.copy(alpha = 0.5f)),
@@ -778,43 +745,6 @@ fun AnimeContent(
                     tint = tint
                 )
             }
-        }
-    }
-}
-
-@Composable
-fun AnimeListGrid(pagingItems: LazyPagingItems<AnimeResponse>, context: Context) {
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-//                columns = GridCells.Adaptive(minSize = 138.dp),
-//                    state = lazyGridState,
-        modifier = Modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(4.dp)
-    ) {
-        items(
-            count = pagingItems.itemCount,
-            key = { anime -> pagingItems[anime]?.malId ?: 0 }) { anime ->
-            GlideImage(
-                imageModel = { pagingItems[anime]?.images?.webp?.imageUrl ?: "" },
-                imageOptions = ImageOptions(
-                    contentScale = ContentScale.Crop
-                ),
-                loading = { LoadingScreen() },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(4.dp)
-//                            .height(200.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .clickable {
-                        Toast
-                            .makeText(
-                                context,
-                                pagingItems[anime]?.title ?: "",
-                                Toast.LENGTH_SHORT
-                            )
-                            .show()
-                    }
-            )
         }
     }
 }
