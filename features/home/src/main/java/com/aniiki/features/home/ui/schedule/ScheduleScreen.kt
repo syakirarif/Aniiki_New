@@ -17,7 +17,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.paging.compose.collectAsLazyPagingItems
 import com.aniiki.features.home.ui.home.AnimeGridList
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.syakirarif.aniiki.apiservice.response.anime.AnimeResponse
@@ -53,9 +52,6 @@ fun ScheduleMainScreen(
 
     val today = getCurrentDay().replaceFirstChar { it.uppercase() }
 
-    val animeSchedulePagingState by scheduleViewModel.animeSchedulePagingState.collectAsState()
-    val animeSchedulePagingItems = animeSchedulePagingState.dataPaging.collectAsLazyPagingItems()
-
     val animeScheduleState by scheduleViewModel.animeScheduleState.collectAsState()
 
     val heightSize = WindowInsets.systemBars.asPaddingValues()
@@ -77,11 +73,6 @@ fun ScheduleMainScreen(
                 text = "Today's Schedule Anime ($today)",
                 style = MaterialTheme.typography.titleLarge
             )
-//            AnimeGridListPaging(
-//                pagingItems = animeSchedulePagingItems,
-//                onErrorClick = { scheduleViewModel.fetchAnimeSchedulePaging() },
-//                errorMessageMain = animeScheduleState.errorMessage
-//            )
             AnimeGridList(
                 homeUiState = animeScheduleState,
                 onErrorClick = {},
