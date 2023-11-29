@@ -56,11 +56,6 @@ class HomeViewModel @Inject constructor(
 
     fun fetchAnimeUpcoming() {
         viewModelScope.launch {
-//            _animeTopUpcomingState.value = homeRepository.getAnimeTopUpcoming().stateIn(
-//                scope = viewModelScope,
-//                started = SharingStarted.WhileSubscribed(5000L),
-//                initialValue = HomeUiState(isLoading = true)
-//            ).value
             homeRepository.getAnimeTopUpcoming().collectLatest {
                 _animeTopUpcomingState.value = it
             }
