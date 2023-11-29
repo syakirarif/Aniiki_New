@@ -31,30 +31,12 @@ class HomeActivity : ComponentActivity() {
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-//            window.setDecorFitsSystemWindows(false); //also tried with true
-//        } else {
-//            window.setFlags(
-//                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-//                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
-//            )
-//        }
-
         window.setFlags(
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
         )
 
         setContent {
-//            MovieScreen(
-//                viewModel = viewModel,
-//                selectPoster = {
-//                    debugPrint("MAL ID: $it")
-//                },
-//                lazyGridState = LazyGridState()
-//            )
-
-
             BidayahTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -65,8 +47,6 @@ class HomeActivity : ComponentActivity() {
                         scheduleViewModel = scheduleViewModel,
                         detailViewModel = detailViewModel,
                         peopleDetailViewModel = peopleDetailViewModel
-//                        modifier = Modifier
-//                            .navigationBarsPadding()
                     )
                 }
             }
