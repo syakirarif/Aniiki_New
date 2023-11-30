@@ -5,6 +5,7 @@ package com.syakirarif.aniiki.apiservice.utils
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import com.syakirarif.aniiki.apiservice.R
 import okhttp3.Interceptor
 import okhttp3.Response
 import java.io.IOException
@@ -17,7 +18,7 @@ import javax.inject.Singleton
 class NoConnectionInterceptor @Inject constructor(private val context: Context) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         return if (!isOnline()) {
-            throw NoConnectivityException()
+            throw NoConnectivityException(context)
         }
 //        else if (!isInternetAvailable()) {
 //            throw NoInternetException()
@@ -93,9 +94,9 @@ class NoConnectionInterceptor @Inject constructor(private val context: Context) 
 
     }
 
-    class NoConnectivityException : IOException() {
+    class NoConnectivityException(private val context: Context) : IOException() {
         override val message: String
-            get() = "Tidak dapat terhubung ke internet, mohon cek koneksi WiFi atau Paket Data anda."
+            get() = context.getString(R.string.message_noconnection_interceptor)
     }
 
     class NoInternetException() : IOException() {
