@@ -23,14 +23,10 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -44,56 +40,56 @@ import com.syakirarif.aniiki.compose.custom.NetworkImage
 import com.syakirarif.aniiki.compose.custom.StaggeredVerticalGrid
 import timber.log.Timber
 
-@Composable
-fun LoginScreen(
-    result: List<AnimeResponse> = listOf()
-) {
-//    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
-//    val result by viewModel.getAnimeSeason2().observeAsState()
-//    val result: List<AnimeResponse> = listOf()
-
-    LaunchedEffect(key1 = Unit) {
-//        viewModel.getAnimeList()
-
-        Timber.e("LAUNCHED EFFECT")
-    }
-
-    Timber.e("result => $result")
-
-
-    val snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
-    Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) },
-        modifier = Modifier.fillMaxSize()
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
-//            LoginContent(loading = uiState.isLoading, data = uiState.data)
-//            when (result.status) {
-//                Status.SUCCESS -> {
-//                    result.data?.let {
-//                        it.forEach { each ->
-//                            ShowDataScreen(resp = each)
-//                        }
-//                    }
-//                }
+//@Composable
+//fun LoginScreen(
+//    result: List<AnimeResponse> = listOf()
+//) {
+////    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 //
-//                Status.LOADING -> {
-//                    LoadingScreen()
-//                }
+////    val result by viewModel.getAnimeSeason2().observeAsState()
+////    val result: List<AnimeResponse> = listOf()
 //
-//                else -> {
-//                    NoDataScreen(message = "Error")
-//                }
-//            }
-        }
-    }
-
-}
+//    LaunchedEffect(key1 = Unit) {
+////        viewModel.getAnimeList()
+//
+//        Timber.e("LAUNCHED EFFECT")
+//    }
+//
+//    Timber.e("result => $result")
+//
+//
+//    val snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
+//    Scaffold(
+//        snackbarHost = { SnackbarHost(snackbarHostState) },
+//        modifier = Modifier.fillMaxSize()
+//    ) { paddingValues ->
+//        Column(
+//            modifier = Modifier
+//                .fillMaxSize()
+//                .padding(paddingValues)
+//        ) {
+////            LoginContent(loading = uiState.isLoading, data = uiState.data)
+////            when (result.status) {
+////                Status.SUCCESS -> {
+////                    result.data?.let {
+////                        it.forEach { each ->
+////                            ShowDataScreen(resp = each)
+////                        }
+////                    }
+////                }
+////
+////                Status.LOADING -> {
+////                    LoadingScreen()
+////                }
+////
+////                else -> {
+////                    NoDataScreen(message = "Error")
+////                }
+////            }
+//        }
+//    }
+//
+//}
 
 @Composable
 fun LoginContent(
