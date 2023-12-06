@@ -19,7 +19,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -109,20 +108,20 @@ import com.syakirarif.aniiki.compose.custom.StaggeredVerticalGrid
 //    }
 //}
 
-@Composable
-fun ShowDataScreen(resp: AnimeResponse) {
-
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Text(text = "${resp.title}", style = MaterialTheme.typography.titleMedium)
-        Text(
-            text = "${resp.titleJapanese}",
-            style = MaterialTheme.typography.titleSmall
-        )
-        Divider(color = Color.Blue, thickness = 1.dp)
-    }
-}
+//@Composable
+//fun ShowDataScreen(resp: AnimeResponse) {
+//
+//    Column(
+//        modifier = Modifier.fillMaxSize()
+//    ) {
+//        Text(text = "${resp.title}", style = MaterialTheme.typography.titleMedium)
+//        Text(
+//            text = "${resp.titleJapanese}",
+//            style = MaterialTheme.typography.titleSmall
+//        )
+//        Divider(color = Color.Blue, thickness = 1.dp)
+//    }
+//}
 
 @Composable
 fun AnimeCard(resp: AnimeResponse) {
