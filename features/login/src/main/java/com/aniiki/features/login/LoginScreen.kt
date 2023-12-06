@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -38,7 +37,6 @@ import coil.compose.rememberAsyncImagePainter
 import com.syakirarif.aniiki.apiservice.response.anime.AnimeResponse
 import com.syakirarif.aniiki.compose.custom.NetworkImage
 import com.syakirarif.aniiki.compose.custom.StaggeredVerticalGrid
-import timber.log.Timber
 
 //@Composable
 //fun LoginScreen(
@@ -91,25 +89,25 @@ import timber.log.Timber
 //
 //}
 
-@Composable
-fun LoginContent(
-    loading: Boolean,
-    data: List<AnimeResponse>
-) {
-    val lazyColumnListState = rememberLazyListState()
-    if (loading) {
-        LoadingScreen()
-    } else {
-        AnimePosters(posters = data, selectPoster = {
-            Timber.e("MAL ID => $it")
-        })
-//        LazyColumn(state = lazyColumnListState) {
-//            items(data) { anime ->
-//                AnimeCard(resp = anime)
-//            }
-//        }
-    }
-}
+//@Composable
+//fun LoginContent(
+//    loading: Boolean,
+//    data: List<AnimeResponse>
+//) {
+//    val lazyColumnListState = rememberLazyListState()
+//    if (loading) {
+//        LoadingScreen()
+//    } else {
+//        AnimePosters(posters = data, selectPoster = {
+//            Timber.e("MAL ID => $it")
+//        })
+////        LazyColumn(state = lazyColumnListState) {
+////            items(data) { anime ->
+////                AnimeCard(resp = anime)
+////            }
+////        }
+//    }
+//}
 
 @Composable
 fun ShowDataScreen(resp: AnimeResponse) {
