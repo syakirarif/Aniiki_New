@@ -1,23 +1,16 @@
 package com.aniiki.features.login
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -28,11 +21,9 @@ import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
-import coil.compose.rememberAsyncImagePainter
 import com.syakirarif.aniiki.apiservice.response.anime.AnimeResponse
 import com.syakirarif.aniiki.compose.custom.NetworkImage
 import com.syakirarif.aniiki.compose.custom.StaggeredVerticalGrid
@@ -123,43 +114,43 @@ import com.syakirarif.aniiki.compose.custom.StaggeredVerticalGrid
 //    }
 //}
 
-@Composable
-fun AnimeCard(resp: AnimeResponse) {
-    Card(
-        modifier = Modifier
-            .padding(10.dp)
-            .fillMaxWidth()
-            .wrapContentHeight(),
-        shape = MaterialTheme.shapes.medium,
-        elevation = CardDefaults.cardElevation(defaultElevation = 5.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
-//        backgroundColor = MaterialTheme.colors.surface,
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Image(
-                painter = rememberAsyncImagePainter(resp.images?.webp?.imageUrl),
-                contentDescription = null,
-                modifier = Modifier
-                    .size(130.dp)
-                    .padding(8.dp),
-                contentScale = ContentScale.Fit,
-            )
-            Column(Modifier.padding(8.dp)) {
-                Text(
-                    text = resp.title ?: "",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
-                Text(
-                    text = resp.synopsis ?: "",
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            }
-        }
-    }
-}
+//@Composable
+//fun AnimeCard(resp: AnimeResponse) {
+//    Card(
+//        modifier = Modifier
+//            .padding(10.dp)
+//            .fillMaxWidth()
+//            .wrapContentHeight(),
+//        shape = MaterialTheme.shapes.medium,
+//        elevation = CardDefaults.cardElevation(defaultElevation = 5.dp),
+//        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+////        backgroundColor = MaterialTheme.colors.surface,
+//    ) {
+//        Row(
+//            verticalAlignment = Alignment.CenterVertically,
+//        ) {
+//            Image(
+//                painter = rememberAsyncImagePainter(resp.images?.webp?.imageUrl),
+//                contentDescription = null,
+//                modifier = Modifier
+//                    .size(130.dp)
+//                    .padding(8.dp),
+//                contentScale = ContentScale.Fit,
+//            )
+//            Column(Modifier.padding(8.dp)) {
+//                Text(
+//                    text = resp.title ?: "",
+//                    style = MaterialTheme.typography.titleMedium,
+//                    color = MaterialTheme.colorScheme.onSurface,
+//                )
+//                Text(
+//                    text = resp.synopsis ?: "",
+//                    style = MaterialTheme.typography.bodyMedium,
+//                )
+//            }
+//        }
+//    }
+//}
 
 @Composable
 fun NoDataScreen(message: String) {
