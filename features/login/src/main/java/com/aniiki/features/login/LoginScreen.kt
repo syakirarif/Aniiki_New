@@ -3,7 +3,6 @@ package com.aniiki.features.login
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -152,12 +151,12 @@ import com.syakirarif.aniiki.compose.custom.StaggeredVerticalGrid
 //    }
 //}
 
-@Composable
-fun NoDataScreen(message: String) {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text(message, color = Color.Gray)
-    }
-}
+//@Composable
+//fun NoDataScreen(message: String) {
+//    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+//        Text(message, color = Color.Gray)
+//    }
+//}
 
 @Composable
 fun LoadingScreen(
