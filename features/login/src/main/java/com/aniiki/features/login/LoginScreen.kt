@@ -1,20 +1,5 @@
 package com.aniiki.features.login
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.compose.ConstraintLayout
-import com.syakirarif.aniiki.apiservice.response.anime.AnimeResponse
-import com.syakirarif.aniiki.compose.custom.NetworkImage
-
 //@Composable
 //fun LoginScreen(
 //    result: List<AnimeResponse> = listOf()
@@ -197,58 +182,58 @@ import com.syakirarif.aniiki.compose.custom.NetworkImage
 //    }
 //}
 
-@Composable
-private fun AnimePoster(
-    modifier: Modifier = Modifier,
-    poster: AnimeResponse,
-    selectPoster: (Int?) -> Unit = {},
-) {
-    Surface(
-        modifier = modifier
-            .padding(4.dp)
-            .clickable(
-                onClick = { selectPoster(poster.malId) }
-            ),
-        color = MaterialTheme.colorScheme.onBackground,
-        shadowElevation = 8.dp,
-        shape = RoundedCornerShape(8.dp)
-    ) {
-        ConstraintLayout {
-            val (image, title, content) = createRefs()
-            NetworkImage(
-                modifier = Modifier
-                    .aspectRatio(0.8f)
-                    .constrainAs(image) {
-                        centerHorizontallyTo(parent)
-                        top.linkTo(parent.top)
-                    },
-                url = poster.images?.webp?.imageUrl ?: "",
-            )
-
-            Text(
-                modifier = Modifier
-                    .constrainAs(title) {
-                        centerHorizontallyTo(parent)
-                        top.linkTo(image.bottom)
-                    }
-                    .padding(8.dp),
-                text = poster.title ?: "",
-                style = MaterialTheme.typography.titleMedium,
-                textAlign = TextAlign.Center,
-            )
-
-            Text(
-                modifier = Modifier
-                    .constrainAs(content) {
-                        centerHorizontallyTo(parent)
-                        top.linkTo(title.bottom)
-                    }
-                    .padding(horizontal = 8.dp)
-                    .padding(bottom = 12.dp),
-                text = poster.titleJapanese ?: "",
-                style = MaterialTheme.typography.bodyMedium,
-                textAlign = TextAlign.Center,
-            )
-        }
-    }
-}
+//@Composable
+//private fun AnimePoster(
+//    modifier: Modifier = Modifier,
+//    poster: AnimeResponse,
+//    selectPoster: (Int?) -> Unit = {},
+//) {
+//    Surface(
+//        modifier = modifier
+//            .padding(4.dp)
+//            .clickable(
+//                onClick = { selectPoster(poster.malId) }
+//            ),
+//        color = MaterialTheme.colorScheme.onBackground,
+//        shadowElevation = 8.dp,
+//        shape = RoundedCornerShape(8.dp)
+//    ) {
+//        ConstraintLayout {
+//            val (image, title, content) = createRefs()
+//            NetworkImage(
+//                modifier = Modifier
+//                    .aspectRatio(0.8f)
+//                    .constrainAs(image) {
+//                        centerHorizontallyTo(parent)
+//                        top.linkTo(parent.top)
+//                    },
+//                url = poster.images?.webp?.imageUrl ?: "",
+//            )
+//
+//            Text(
+//                modifier = Modifier
+//                    .constrainAs(title) {
+//                        centerHorizontallyTo(parent)
+//                        top.linkTo(image.bottom)
+//                    }
+//                    .padding(8.dp),
+//                text = poster.title ?: "",
+//                style = MaterialTheme.typography.titleMedium,
+//                textAlign = TextAlign.Center,
+//            )
+//
+//            Text(
+//                modifier = Modifier
+//                    .constrainAs(content) {
+//                        centerHorizontallyTo(parent)
+//                        top.linkTo(title.bottom)
+//                    }
+//                    .padding(horizontal = 8.dp)
+//                    .padding(bottom = 12.dp),
+//                text = poster.titleJapanese ?: "",
+//                style = MaterialTheme.typography.bodyMedium,
+//                textAlign = TextAlign.Center,
+//            )
+//        }
+//    }
+//}
