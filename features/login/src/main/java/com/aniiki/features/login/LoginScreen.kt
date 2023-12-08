@@ -1,25 +1,19 @@
 package com.aniiki.features.login
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.syakirarif.aniiki.apiservice.response.anime.AnimeResponse
 import com.syakirarif.aniiki.compose.custom.NetworkImage
-import com.syakirarif.aniiki.compose.custom.StaggeredVerticalGrid
 
 //@Composable
 //fun LoginScreen(
@@ -176,32 +170,32 @@ import com.syakirarif.aniiki.compose.custom.StaggeredVerticalGrid
 //    }
 //}
 
-@Composable
-fun AnimePosters(
-    modifier: Modifier = Modifier,
-    posters: List<AnimeResponse>,
-    selectPoster: (Int?) -> Unit,
-) {
-    Column(
-        modifier = modifier
-            .verticalScroll(rememberScrollState())
-            .background(MaterialTheme.colorScheme.background)
-    ) {
-        StaggeredVerticalGrid(
-            maxColumnWidth = 220.dp,
-            modifier = Modifier.padding(4.dp)
-        ) {
-            posters.forEach { poster ->
-                key(poster.malId) {
-                    AnimePoster(
-                        poster = poster,
-                        selectPoster = selectPoster
-                    )
-                }
-            }
-        }
-    }
-}
+//@Composable
+//fun AnimePosters(
+//    modifier: Modifier = Modifier,
+//    posters: List<AnimeResponse>,
+//    selectPoster: (Int?) -> Unit,
+//) {
+//    Column(
+//        modifier = modifier
+//            .verticalScroll(rememberScrollState())
+//            .background(MaterialTheme.colorScheme.background)
+//    ) {
+//        StaggeredVerticalGrid(
+//            maxColumnWidth = 220.dp,
+//            modifier = Modifier.padding(4.dp)
+//        ) {
+//            posters.forEach { poster ->
+//                key(poster.malId) {
+//                    AnimePoster(
+//                        poster = poster,
+//                        selectPoster = selectPoster
+//                    )
+//                }
+//            }
+//        }
+//    }
+//}
 
 @Composable
 private fun AnimePoster(
