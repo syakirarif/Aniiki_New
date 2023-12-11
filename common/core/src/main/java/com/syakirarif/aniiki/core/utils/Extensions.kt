@@ -14,16 +14,16 @@ import java.time.format.TextStyle
 import java.util.Locale
 
 
-fun String.asDateTime(): String {
-    return try {
-        val formatter = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale("id", "ID"))
-        val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
-        val convertedDate = sdf.parse(this)
-        convertedDate?.let { formatter.format(convertedDate) } ?: this
-    } catch (e: Exception) {
-        this
-    }
-}
+//fun String.asDateTime(): String {
+//    return try {
+//        val formatter = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale("id", "ID"))
+//        val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+//        val convertedDate = sdf.parse(this)
+//        convertedDate?.let { formatter.format(convertedDate) } ?: this
+//    } catch (e: Exception) {
+//        this
+//    }
+//}
 
 fun String.asDateTimeLong(): String {
     return try {
