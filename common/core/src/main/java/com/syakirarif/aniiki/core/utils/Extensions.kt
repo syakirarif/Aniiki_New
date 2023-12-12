@@ -8,7 +8,6 @@ import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import timber.log.Timber
 import java.text.NumberFormat
-import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.Locale
@@ -47,16 +46,16 @@ import java.util.Locale
 //    }
 //}
 
-fun String.asOnlyTime(): String {
-    return try {
-        val formatter = SimpleDateFormat("HH:mm:ss", Locale("id", "ID"))
-        val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
-        val convertedDate = sdf.parse(this)
-        convertedDate?.let { formatter.format(convertedDate) } ?: this
-    } catch (e: Exception) {
-        this
-    }
-}
+//fun String.asOnlyTime(): String {
+//    return try {
+//        val formatter = SimpleDateFormat("HH:mm:ss", Locale("id", "ID"))
+//        val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+//        val convertedDate = sdf.parse(this)
+//        convertedDate?.let { formatter.format(convertedDate) } ?: this
+//    } catch (e: Exception) {
+//        this
+//    }
+//}
 
 fun String.decodeFromBase64(): String {
     return Base64.decode(this, Base64.NO_WRAP).toString(charset("UTF-8"))
