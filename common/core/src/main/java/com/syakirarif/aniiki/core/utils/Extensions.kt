@@ -25,16 +25,16 @@ import java.util.Locale
 //    }
 //}
 
-fun String.asDateTimeLong(): String {
-    return try {
-        val formatter = SimpleDateFormat("d MMMM yyyy HH:mm", Locale("id", "ID"))
-        val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
-        val convertedDate = sdf.parse(this)
-        convertedDate?.let { formatter.format(convertedDate) } ?: this
-    } catch (e: Exception) {
-        this
-    }
-}
+//fun String.asDateTimeLong(): String {
+//    return try {
+//        val formatter = SimpleDateFormat("d MMMM yyyy HH:mm", Locale("id", "ID"))
+//        val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+//        val convertedDate = sdf.parse(this)
+//        convertedDate?.let { formatter.format(convertedDate) } ?: this
+//    } catch (e: Exception) {
+//        this
+//    }
+//}
 
 fun String.asOnlyDate(): String {
     return try {
