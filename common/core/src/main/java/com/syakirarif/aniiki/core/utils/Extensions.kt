@@ -57,9 +57,9 @@ import java.util.Locale
 //    }
 //}
 
-fun String.decodeFromBase64(): String {
-    return Base64.decode(this, Base64.NO_WRAP).toString(charset("UTF-8"))
-}
+//fun String.decodeFromBase64(): String {
+//    return Base64.decode(this, Base64.NO_WRAP).toString(charset("UTF-8"))
+//}
 
 fun String.encodeToBase64(): String {
     return Base64.encodeToString(this.toByteArray(charset("UTF-8")), Base64.NO_WRAP)
