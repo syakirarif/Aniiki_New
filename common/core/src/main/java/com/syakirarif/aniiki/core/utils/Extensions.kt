@@ -2,7 +2,6 @@ package com.syakirarif.aniiki.core.utils
 
 import android.app.Activity
 import android.content.Context
-import android.util.Base64
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
@@ -61,9 +60,9 @@ import java.util.Locale
 //    return Base64.decode(this, Base64.NO_WRAP).toString(charset("UTF-8"))
 //}
 
-fun String.encodeToBase64(): String {
-    return Base64.encodeToString(this.toByteArray(charset("UTF-8")), Base64.NO_WRAP)
-}
+//fun String.encodeToBase64(): String {
+//    return Base64.encodeToString(this.toByteArray(charset("UTF-8")), Base64.NO_WRAP)
+//}
 
 fun String.stringToRupiah(): String {
     val localeID = Locale("in", "ID")
