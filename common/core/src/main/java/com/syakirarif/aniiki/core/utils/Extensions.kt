@@ -6,7 +6,6 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import timber.log.Timber
-import java.text.NumberFormat
 import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.Locale
@@ -64,13 +63,13 @@ import java.util.Locale
 //    return Base64.encodeToString(this.toByteArray(charset("UTF-8")), Base64.NO_WRAP)
 //}
 
-fun String.stringToRupiah(): String {
-    val localeID = Locale("in", "ID")
-    val doubleValue = this.toDoubleOrNull() ?: return this
-    val numberFormat = NumberFormat.getCurrencyInstance(localeID)
-    numberFormat.minimumFractionDigits = 0
-    return numberFormat.format(doubleValue)
-}
+//fun String.stringToRupiah(): String {
+//    val localeID = Locale("in", "ID")
+//    val doubleValue = this.toDoubleOrNull() ?: return this
+//    val numberFormat = NumberFormat.getCurrencyInstance(localeID)
+//    numberFormat.minimumFractionDigits = 0
+//    return numberFormat.format(doubleValue)
+//}
 
 fun View.setViewVisibility(visible: Boolean) {
     visibility = if (visible) {
