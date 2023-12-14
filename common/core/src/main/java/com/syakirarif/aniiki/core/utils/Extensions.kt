@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import androidx.fragment.app.Fragment
 import timber.log.Timber
 import java.time.LocalDate
 import java.time.format.TextStyle
@@ -79,9 +78,9 @@ import java.util.Locale
 //    }
 //}
 
-fun Fragment.hideKeyboard() {
-    view?.let { activity?.hideKeyboard(it) }
-}
+//fun Fragment.hideKeyboard() {
+//    view?.let { activity?.hideKeyboard(it) }
+//}
 
 fun Activity.hideKeyboard() {
     hideKeyboard(currentFocus ?: View(this))
