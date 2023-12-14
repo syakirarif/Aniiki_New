@@ -71,13 +71,13 @@ import java.util.Locale
 //    return numberFormat.format(doubleValue)
 //}
 
-fun View.setViewVisibility(visible: Boolean) {
-    visibility = if (visible) {
-        View.VISIBLE
-    } else {
-        View.GONE
-    }
-}
+//fun View.setViewVisibility(visible: Boolean) {
+//    visibility = if (visible) {
+//        View.VISIBLE
+//    } else {
+//        View.GONE
+//    }
+//}
 
 fun Fragment.hideKeyboard() {
     view?.let { activity?.hideKeyboard(it) }
