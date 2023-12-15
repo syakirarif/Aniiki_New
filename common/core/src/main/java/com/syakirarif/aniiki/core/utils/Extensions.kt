@@ -1,6 +1,5 @@
 package com.syakirarif.aniiki.core.utils
 
-import timber.log.Timber
 import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.Locale
@@ -91,9 +90,9 @@ import java.util.Locale
 //    Timber.e("$head => %s", msg)
 //}
 
-fun debugPrint(msg: String? = "") {
-    Timber.e(msg)
-}
+//fun debugPrint(msg: String? = "") {
+//    Timber.e(msg)
+//}
 
 fun getCurrentYear(): String {
     return LocalDate.now().year.toString()
