@@ -1,9 +1,5 @@
 package com.syakirarif.aniiki.core.utils
 
-import android.app.Activity
-import android.content.Context
-import android.view.View
-import android.view.inputmethod.InputMethodManager
 import timber.log.Timber
 import java.time.LocalDate
 import java.time.format.TextStyle
@@ -86,10 +82,10 @@ import java.util.Locale
 //    hideKeyboard(currentFocus ?: View(this))
 //}
 
-fun Context.hideKeyboard(view: View) {
-    val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-    inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
-}
+//fun Context.hideKeyboard(view: View) {
+//    val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+//    inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
+//}
 
 fun debugPrint(head: String? = "", msg: String? = "") {
     Timber.e("$head => %s", msg)
