@@ -87,9 +87,9 @@ import java.util.Locale
 //    inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
 //}
 
-fun debugPrint(head: String? = "", msg: String? = "") {
-    Timber.e("$head => %s", msg)
-}
+//fun debugPrint(head: String? = "", msg: String? = "") {
+//    Timber.e("$head => %s", msg)
+//}
 
 fun debugPrint(msg: String? = "") {
     Timber.e(msg)
