@@ -6,3 +6,8 @@ import androidx.compose.runtime.Composable
 fun RandomScreen1() {
 
 }
+
+@Composable
+fun RandomScreen2() {
+
+}
