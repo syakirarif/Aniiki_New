@@ -11,3 +11,8 @@ fun RandomScreen1() {
 fun RandomScreen2() {
 
 }
+
+@Composable
+fun RandomScreen3() {
+
+}
