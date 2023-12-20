@@ -26,3 +26,8 @@ fun RandomScreen4() {
 fun RandomScreen5() {
 
 }
+
+@Composable
+fun RandomScreen6() {
+
+}
