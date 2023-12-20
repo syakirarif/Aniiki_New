@@ -31,3 +31,8 @@ fun RandomScreen5() {
 fun RandomScreen6() {
 
 }
+
+@Composable
+fun RandomScreen7() {
+
+}
