@@ -2,12 +2,6 @@ package com.syakirarif.aniiki.compose.custom
 
 import androidx.compose.runtime.Composable
 
-
-@Composable
-fun RandomScreen2() {
-
-}
-
 @Composable
 fun RandomScreen3() {
 
