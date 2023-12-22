@@ -6,8 +6,3 @@ import androidx.compose.runtime.Composable
 fun RandomScreen6() {
 
 }
-
-@Composable
-fun RandomScreen7() {
-
-}
