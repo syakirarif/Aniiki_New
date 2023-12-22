@@ -11,8 +11,3 @@ fun RandomScreen6() {
 fun RandomScreen7() {
 
 }
-
-@Composable
-fun RandomScreen8() {
-
-}
