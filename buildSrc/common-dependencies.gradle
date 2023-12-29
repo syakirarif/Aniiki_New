@@ -1,8 +1,10 @@
 
 dependencies {
     implementation 'androidx.compose.runtime:runtime:1.5.1'
-    implementation 'com.google.dagger:hilt-android:2.48'
-    ksp 'com.google.dagger:hilt-compiler:2.48'
+//    implementation 'com.google.dagger:hilt-android:2.48'
+    implementation 'com.google.dagger:hilt-android:2.50'
+//    ksp 'com.google.dagger:hilt-compiler:2.48'
+    ksp 'com.google.dagger:hilt-compiler:2.50'
 //  implementation 'com.google.dagger:dagger:2.42'
 //  kapt 'com.google.dagger:dagger-compiler:2.42'
 }
