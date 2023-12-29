@@ -1,7 +1,10 @@
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
-    id("dagger.hilt.android.plugin")
+
+    //    id("dagger.hilt.android.plugin")
+    id("com.google.dagger.hilt.android") // Hilt 2.50
+
 //    id("com.google.gms.google-services")
 //    id("com.google.firebase.crashlytics")
     id("com.google.devtools.ksp")
