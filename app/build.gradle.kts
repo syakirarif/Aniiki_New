@@ -3,7 +3,10 @@ import java.util.Properties
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("dagger.hilt.android.plugin")
+
+//    id("dagger.hilt.android.plugin")
+    id("com.google.dagger.hilt.android") // Hilt 2.50
+
 //    id("com.google.gms.google-services")
 //    id("com.google.firebase.crashlytics")
     id("com.google.devtools.ksp")
@@ -92,8 +95,10 @@ dependencies {
 //    implementation(Google.dagger.hilt.android)
 //    kapt(Google.dagger.hilt.compiler)
 //    kapt(Google.dagger.hilt.android.compiler)
-    implementation("com.google.dagger:hilt-android:2.48")
-    ksp("com.google.dagger:hilt-compiler:2.48")
+//    implementation("com.google.dagger:hilt-android:2.48")
+//    ksp("com.google.dagger:hilt-compiler:2.48")
+    implementation("com.google.dagger:hilt-android:2.50")
+    ksp("com.google.dagger:hilt-compiler:2.50")
 
 }
 
