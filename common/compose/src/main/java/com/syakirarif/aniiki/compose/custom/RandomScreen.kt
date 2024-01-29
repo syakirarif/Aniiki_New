@@ -6,3 +6,8 @@ import androidx.compose.runtime.Composable
 fun TemplateScreen1() {
 
 }
+
+@Composable
+fun TemplateScreen2() {
+
+}
