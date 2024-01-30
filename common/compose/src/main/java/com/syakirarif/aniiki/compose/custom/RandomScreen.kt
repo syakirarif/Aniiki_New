@@ -11,8 +11,3 @@ fun TemplateScreen1() {
 fun TemplateScreen2() {
 
 }
-
-@Composable
-fun TemplateScreen3() {
-
-}
