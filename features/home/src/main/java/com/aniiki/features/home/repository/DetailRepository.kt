@@ -10,6 +10,7 @@ import com.skydoves.sandwich.suspendOnError
 import com.skydoves.sandwich.suspendOnFailure
 import com.skydoves.sandwich.suspendOnSuccess
 import com.syakirarif.aniiki.apiservice.api.AnimeEndpoints
+import com.syakirarif.aniiki.apiservice.utils.ErrorEnvelopeMapper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -34,11 +35,11 @@ class DetailRepository constructor(
                     dataPictures = this.data.data ?: mutableListOf()
                 )
             )
-        }.suspendOnError {
+        }.suspendOnError(ErrorEnvelopeMapper) {
 //            val jsonObject = JSONObject(this.toString())
 //            val errorMessage = jsonObject.getString("message")
             emit(
-                unsuccessfulDetailUiState(message = this.message())
+                unsuccessfulDetailUiState(message = this.codeMessage)
             )
         }.suspendOnFailure {
             emit(
@@ -64,12 +65,12 @@ class DetailRepository constructor(
                 )
 
             )
-        }.suspendOnError {
-            Timber.e("DetailRepository | getAnimeCharacters | onError | msg: ${this.message()}")
+        }.suspendOnError(ErrorEnvelopeMapper) {
+            Timber.e("DetailRepository | getAnimeCharacters | onError | msg: ${this.codeMessage}")
 //            val jsonObject = JSONObject(this.toString())
 //            val errorMessage = jsonObject.getString("message")
             emit(
-                unsuccessfulDetailUiState(message = this.message())
+                unsuccessfulDetailUiState(message = this.codeMessage)
             )
         }.suspendOnFailure {
             Timber.e("DetailRepository | getAnimeCharacters | onFailure | msg: ${this.message()}")

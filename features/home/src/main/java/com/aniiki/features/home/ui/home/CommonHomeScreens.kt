@@ -71,12 +71,12 @@ fun AnimeGridList(
     val context = LocalContext.current
 
     if (homeUiState.isLoading) {
-        Timber.e("HomeAnimeList | isLoading")
+        Timber.e("AnimeGridList | isLoading")
         LoadingScreen()
     } else {
 
         if (!homeUiState.isError) {
-            Timber.e("HomeAnimeList | isNotLoading | Available - ${homeUiState.data.size}")
+            Timber.e("AnimeGridList | isNotLoading | Available - ${homeUiState.data.size}")
             if (homeUiState.data.isNotEmpty()) {
                 AnimeComponentGrid(
                     items = homeUiState.data,
@@ -85,7 +85,7 @@ fun AnimeGridList(
                     onItemClicked = onItemClicked
                 )
             } else {
-                Timber.e("HomeAnimeList | isNotLoading | Empty - ${homeUiState.data.size}")
+                Timber.e("AnimeGridList | isNotLoading | Empty - ${homeUiState.data.size}")
                 ErrorScreen(errorMessage = "Empty", onErrorClick = onErrorClick)
             }
 

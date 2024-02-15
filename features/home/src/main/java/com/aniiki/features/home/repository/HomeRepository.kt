@@ -12,6 +12,7 @@ import com.skydoves.sandwich.suspendOnFailure
 import com.skydoves.sandwich.suspendOnSuccess
 import com.syakirarif.aniiki.apiservice.api.AnimeEndpoints
 import com.syakirarif.aniiki.apiservice.response.anime.AnimeResponse
+import com.syakirarif.aniiki.apiservice.utils.ErrorEnvelopeMapper
 import com.syakirarif.aniiki.core.base.createPager
 import com.syakirarif.aniiki.core.utils.getCurrentAnimeSeason
 import com.syakirarif.aniiki.core.utils.getCurrentYear
@@ -47,9 +48,9 @@ class HomeRepository constructor(
                     data = this.data.data
                 )
             )
-        }.suspendOnError {
+        }.suspendOnError(ErrorEnvelopeMapper) {
             emit(
-                unsuccessfulHomeUiState(message = this.message())
+                unsuccessfulHomeUiState(message = this.codeMessage)
             )
         }.suspendOnFailure {
             emit(
@@ -72,9 +73,9 @@ class HomeRepository constructor(
                     data = this.data.data
                 )
             )
-        }.suspendOnError {
+        }.suspendOnError(ErrorEnvelopeMapper) {
             emit(
-                unsuccessfulHomeUiState(message = this.message())
+                unsuccessfulHomeUiState(message = this.codeMessage)
             )
         }.suspendOnFailure {
             emit(
@@ -95,11 +96,11 @@ class HomeRepository constructor(
                     data = this.data.data
                 )
             )
-        }.suspendOnError {
+        }.suspendOnError(ErrorEnvelopeMapper) {
 //            val jsonObject = JSONObject(this.toString())
 //            val errorMessage = jsonObject.getString("message")
             emit(
-                unsuccessfulHomeUiState(message = this.message())
+                unsuccessfulHomeUiState(message = this.codeMessage)
             )
         }.suspendOnFailure {
             emit(

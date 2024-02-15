@@ -1,10 +1,10 @@
 package com.syakirarif.aniiki.apiservice.utils
 
 object NetworkConsts {
-    const val CANNOT_CONNECT_TO_SERVER = "Cannot connect to the server"
+    const val CANNOT_CONNECT_TO_SERVER = "Cannot connect to Oppal server"
     const val CODE_200 = "OK"
-    const val CODE_401 = "Unauthorized to access the Server"
-    const val CODE_403 = "Forbidden to access the Server"
+    const val CODE_401 = "Unauthorized to access Oppal Server"
+    const val CODE_403 = "Forbidden to access Oppal Server"
     const val CODE_404 = "404 Not Found"
     const val CODE_415 = "Unsupported Media Type"
     const val CODE_500 = "Internal Server Error"

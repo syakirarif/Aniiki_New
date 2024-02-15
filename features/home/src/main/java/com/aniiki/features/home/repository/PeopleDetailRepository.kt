@@ -13,6 +13,7 @@ import com.syakirarif.aniiki.apiservice.api.AnimeEndpoints
 import com.syakirarif.aniiki.apiservice.response.anime.childs.Person
 import com.syakirarif.aniiki.apiservice.response.character.AnimeCharacterResponse
 import com.syakirarif.aniiki.apiservice.response.people.PeopleResponse
+import com.syakirarif.aniiki.apiservice.utils.ErrorEnvelopeMapper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -38,10 +39,10 @@ class PeopleDetailRepository constructor(
                     dataCharacterDetail = this.data.data ?: AnimeCharacterResponse()
                 )
             )
-        }.suspendOnError {
-            Timber.e("PeopleDetailRepository | getCharacterDetail | onError | msg: ${this.message()}")
+        }.suspendOnError(ErrorEnvelopeMapper) {
+            Timber.e("PeopleDetailRepository | getCharacterDetail | onError | msg: ${this.codeMessage}")
             emit(
-                unsuccessfulPeopleDetailUiState(this.message())
+                unsuccessfulPeopleDetailUiState(this.codeMessage)
             )
         }.suspendOnFailure {
             Timber.e("PeopleDetailRepository | getCharacterDetail | onFailure | msg: ${this.message()}")
@@ -76,10 +77,10 @@ class PeopleDetailRepository constructor(
                     dataPeopleVoicedCharacters = listCharUnique
                 )
             )
-        }.suspendOnError {
-            Timber.e("PeopleDetailRepository | getPeopleDetail | onError | msg: ${this.message()}")
+        }.suspendOnError(ErrorEnvelopeMapper) {
+            Timber.e("PeopleDetailRepository | getPeopleDetail | onError | msg: ${this.codeMessage}")
             emit(
-                unsuccessfulPeopleDetailUiState(this.message())
+                unsuccessfulPeopleDetailUiState(this.codeMessage)
             )
         }.suspendOnFailure {
             Timber.e("PeopleDetailRepository | getPeopleDetail | onFailure | msg: ${this.message()}")

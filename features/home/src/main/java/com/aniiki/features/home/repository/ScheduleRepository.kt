@@ -5,13 +5,13 @@ import androidx.paging.PagingData
 import com.aniiki.features.home.repository.utils.unsuccessfulHomeUiState
 import com.aniiki.features.home.ui.state.HomeUiState
 import com.skydoves.sandwich.isSuccess
-import com.skydoves.sandwich.message
 import com.skydoves.sandwich.messageOrNull
 import com.skydoves.sandwich.suspendOnError
-import com.skydoves.sandwich.suspendOnFailure
+import com.skydoves.sandwich.suspendOnException
 import com.skydoves.sandwich.suspendOnSuccess
 import com.syakirarif.aniiki.apiservice.api.AnimeEndpoints
 import com.syakirarif.aniiki.apiservice.response.anime.AnimeResponse
+import com.syakirarif.aniiki.apiservice.utils.ErrorEnvelopeMapper
 import com.syakirarif.aniiki.core.base.createPager
 import com.syakirarif.aniiki.core.utils.getCurrentDay
 import kotlinx.coroutines.Dispatchers
@@ -46,13 +46,13 @@ class ScheduleRepository constructor(
                     data = this.data.data
                 )
             )
-        }.suspendOnError {
+        }.suspendOnError(ErrorEnvelopeMapper) {
             emit(
-                unsuccessfulHomeUiState(message = this.message())
+                unsuccessfulHomeUiState(message = this.codeMessage)
             )
-        }.suspendOnFailure {
+        }.suspendOnException {
             emit(
-                unsuccessfulHomeUiState(message = this.message())
+                unsuccessfulHomeUiState(message = this.messageOrNull ?: "")
             )
         }
     }.flowOn(Dispatchers.IO)
