@@ -5,7 +5,6 @@ import androidx.paging.PagingData
 import com.aniiki.features.home.repository.utils.unsuccessfulHomeUiState
 import com.aniiki.features.home.ui.state.HomeUiState
 import com.skydoves.sandwich.isSuccess
-import com.skydoves.sandwich.message
 import com.skydoves.sandwich.messageOrNull
 import com.skydoves.sandwich.suspendOnError
 import com.skydoves.sandwich.suspendOnFailure
@@ -44,7 +43,7 @@ class HomeRepository constructor(
                 HomeUiState(
                     isLoading = false,
                     isError = !this.isSuccess,
-                    errorMessage = this.messageOrNull ?: "",
+                    errorMessage = this.messageOrNull.orEmpty(),
                     data = this.data.data
                 )
             )
@@ -54,7 +53,7 @@ class HomeRepository constructor(
             )
         }.suspendOnFailure {
             emit(
-                unsuccessfulHomeUiState(message = this.message())
+                unsuccessfulHomeUiState(message = this.messageOrNull.orEmpty())
             )
         }
     }.flowOn(Dispatchers.IO)
@@ -79,7 +78,7 @@ class HomeRepository constructor(
             )
         }.suspendOnFailure {
             emit(
-                unsuccessfulHomeUiState(message = this.message())
+                unsuccessfulHomeUiState(message = this.messageOrNull.orEmpty())
             )
         }
     }.onStart { emit(HomeUiState(isLoading = true)) }.flowOn(Dispatchers.IO)
@@ -104,7 +103,7 @@ class HomeRepository constructor(
             )
         }.suspendOnFailure {
             emit(
-                unsuccessfulHomeUiState(message = this.message())
+                unsuccessfulHomeUiState(message = this.messageOrNull.orEmpty())
             )
         }
     }.onStart { emit(HomeUiState(isLoading = true)) }.flowOn(Dispatchers.IO)

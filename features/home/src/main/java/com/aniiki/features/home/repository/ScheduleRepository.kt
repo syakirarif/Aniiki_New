@@ -7,7 +7,7 @@ import com.aniiki.features.home.ui.state.HomeUiState
 import com.skydoves.sandwich.isSuccess
 import com.skydoves.sandwich.messageOrNull
 import com.skydoves.sandwich.suspendOnError
-import com.skydoves.sandwich.suspendOnException
+import com.skydoves.sandwich.suspendOnFailure
 import com.skydoves.sandwich.suspendOnSuccess
 import com.syakirarif.aniiki.apiservice.api.AnimeEndpoints
 import com.syakirarif.aniiki.apiservice.response.anime.AnimeResponse
@@ -50,7 +50,7 @@ class ScheduleRepository constructor(
             emit(
                 unsuccessfulHomeUiState(message = this.codeMessage)
             )
-        }.suspendOnException {
+        }.suspendOnFailure {
             emit(
                 unsuccessfulHomeUiState(message = this.messageOrNull ?: "")
             )

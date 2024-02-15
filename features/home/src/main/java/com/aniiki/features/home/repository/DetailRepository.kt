@@ -73,9 +73,9 @@ class DetailRepository constructor(
                 unsuccessfulDetailUiState(message = this.codeMessage)
             )
         }.suspendOnFailure {
-            Timber.e("DetailRepository | getAnimeCharacters | onFailure | msg: ${this.message()}")
+            Timber.e("DetailRepository | getAnimeCharacters | onFailure | msg: ${this.messageOrNull}")
             emit(
-                unsuccessfulDetailUiState(message = this.message())
+                unsuccessfulDetailUiState(message = this.messageOrNull ?: "")
             )
         }
 

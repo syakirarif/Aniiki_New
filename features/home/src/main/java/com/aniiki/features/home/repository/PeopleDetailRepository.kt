@@ -85,7 +85,7 @@ class PeopleDetailRepository constructor(
         }.suspendOnFailure {
             Timber.e("PeopleDetailRepository | getPeopleDetail | onFailure | msg: ${this.message()}")
             emit(
-                unsuccessfulPeopleDetailUiState(this.message())
+                unsuccessfulPeopleDetailUiState(this.messageOrNull ?: "")
             )
         }
     }.onStart { emit(PeopleDetailUiState(isLoading = true)) }.flowOn(Dispatchers.IO)
