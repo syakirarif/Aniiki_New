@@ -3,6 +3,7 @@ import java.util.Properties
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.plugin.compose")
 
 //    id("dagger.hilt.android.plugin")
     id("com.google.dagger.hilt.android") // Hilt 2.50
